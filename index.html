@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jojo Quiz 👑</title>
 
-  <title>قديش بتعرف جودي؟ 🎀</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -14,444 +15,762 @@
     body {
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #ffdce9;
-      color: #63394c;
+      font-family: Arial, Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at top, #fff 0%, #ffe8f2 35%, #ffd0e2 100%);
+      color: #4b2035;
     }
 
-    body::before {
-      content: "♡ 🎀 ♡ ✨ ♡ 🎀 ♡";
-      position: fixed;
-      top: 20px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 24px;
-      opacity: 0.5;
+    .app {
+      width: min(94%, 650px);
+      margin: auto;
+      padding: 28px 0 45px;
     }
 
     .card {
-      width: 100%;
-      max-width: 500px;
-      padding: 32px 24px;
-      background: rgba(255,255,255,0.96);
-      border: 2px solid #f6b8cf;
+      background: rgba(255,255,255,.92);
       border-radius: 30px;
-      box-shadow: 0 15px 40px rgba(177,91,125,0.15);
-      text-align: center;
+      padding: 28px 22px;
+      box-shadow: 0 18px 55px rgba(180, 65, 110, .18);
+      border: 1px solid rgba(255,255,255,.9);
     }
 
-    .bow {
-      font-size: 55px;
+    .hidden {
+      display: none !important;
+    }
+
+    .crown {
+      font-size: 50px;
+      text-align: center;
       margin-bottom: 8px;
     }
 
+    h1, h2 {
+      text-align: center;
+      margin: 8px 0 12px;
+    }
+
     h1 {
-      margin: 0 0 15px;
-      color: #c85c89;
-      font-size: 29px;
+      font-size: 32px;
     }
 
     h2 {
-      color: #c85c89;
-    }
-
-    p {
-      line-height: 1.8;
+      font-size: 25px;
     }
 
     .subtitle {
-      color: #986477;
+      text-align: center;
+      line-height: 1.8;
+      color: #81556a;
+      margin-bottom: 24px;
     }
 
     input {
       width: 100%;
       padding: 16px;
-      margin: 18px 0 14px;
-      border: 2px solid #f2bdd2;
+      border: 2px solid #f3bfd4;
       border-radius: 16px;
-      text-align: center;
-      font-size: 16px;
+      font-size: 17px;
       outline: none;
-      color: #63394c;
-      background: #fff8fb;
+      text-align: right;
+      margin-bottom: 12px;
+      background: #fffafd;
     }
 
     input:focus {
-      border-color: #d978a0;
+      border-color: #e98caf;
     }
 
     button {
       width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 18px;
-      background: #e98db2;
-      color: white;
+      border: 0;
+      border-radius: 17px;
+      padding: 16px;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 5px 0 #c96891;
+      transition: .2s;
     }
 
-    button:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 #c96891;
+    .primary {
+      background: linear-gradient(135deg, #ed79a6, #c94f83);
+      color: white;
+      box-shadow: 0 10px 25px rgba(201,79,131,.25);
     }
 
-    .option {
-      background: #fff3f8;
-      color: #63394c;
-      border: 2px solid #f3bfd4;
-      box-shadow: none;
+    .primary:hover {
+      transform: translateY(-2px);
+    }
+
+    .secondary {
       margin-top: 12px;
+      background: #fff0f6;
+      color: #a33f68;
     }
 
-    .option:hover {
-      background: #ffe3ef;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .question-number {
-      color: #c85c89;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .progress {
-      width: 100%;
-      height: 10px;
-      background: #f8d9e5;
-      border-radius: 20px;
-      overflow: hidden;
-      margin: 15px 0 25px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #e98db2;
-      transition: width 0.3s;
-    }
-
-    .score {
-      font-size: 55px;
-      color: #c85c89;
-      font-weight: bold;
-      margin: 15px 0;
-    }
-
-    .message {
-      color: #986477;
-      font-size: 17px;
+    .error {
+      min-height: 22px;
+      color: #c03965;
+      font-size: 14px;
+      margin-bottom: 8px;
+      text-align: center;
     }
 
     .hearts {
-      margin-top: 25px;
-      color: #e98db2;
-      letter-spacing: 6px;
-      font-size: 20px;
+      text-align: center;
+      font-size: 29px;
+      letter-spacing: 5px;
+      margin: 10px 0 18px;
+    }
+
+    .question-number {
+      text-align: center;
+      color: #a3657e;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .question {
+      font-size: 24px;
+      line-height: 1.55;
+      text-align: center;
+      margin: 12px 0 22px;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+
+    .answer {
+      background: #fff7fa;
+      color: #59263e;
+      border: 2px solid #f4c6d8;
+      text-align: right;
+      transition: .18s;
+    }
+
+    .answer:hover {
+      background: #ffeaf3;
+      transform: translateY(-1px);
+    }
+
+    .answer:disabled {
+      opacity: .75;
+      cursor: default;
+    }
+
+    .score {
+      font-size: 46px;
+      font-weight: bold;
+      text-align: center;
+      color: #c64f82;
+      margin: 12px 0;
+    }
+
+    .result-text {
+      text-align: center;
+      line-height: 1.8;
+      color: #70465a;
+    }
+
+    .tiny {
+      text-align: center;
+      font-size: 12px;
+      color: #a7798d;
+      margin-top: 20px;
     }
   </style>
 </head>
 
 <body>
+  <main class="app">
 
-  <!-- الصفحة الأولى -->
-  <main class="card" id="startPage">
+    <!-- البداية -->
+    <section id="startScreen" class="card">
+      <div class="crown">👑</div>
+      <h1>اختبار جودي</h1>
 
-    <div class="bow">🎀</div>
+      <p class="subtitle">
+        كم تعرف عن جودي فعلًا؟<br>
+        أسئلة عشوائية، قلوب محدودة، والكوين جودي لا تُقارن. 💗
+      </p>
 
-    <h1>قديش بتعرف جودي؟</h1>
+      <input
+        id="nameInput"
+        type="text"
+        maxlength="40"
+        placeholder="اكتب الاسم"
+        autocomplete="off"
+      />
 
-    <p class="subtitle">
-      قبل ما نبدأ... خلينا نعرف مين إنتِ أو إنتَ ♡
-    </p>
+      <div id="nameError" class="error"></div>
 
-    <input
-      id="visitorName"
-      type="text"
-      placeholder="اكتب اسمك هون ♡"
-      maxlength="40"
-    >
+      <button class="primary" id="startBtn">
+        ابدأ الاختبار
+      </button>
 
-    <p id="nameMessage"></p>
-
-    <button onclick="startQuiz()">
-      ♡ دخول ♡
-    </button>
-
-    <div class="hearts">
-      ♡ ♡ ♡ ♡ ♡
-    </div>
-
-  </main>
+      <p class="tiny">كل محاولة تُحفظ بشكل مستقل.</p>
+    </section>
 
 
-  <!-- صفحة الأسئلة -->
-  <main class="card hidden" id="quizPage">
+    <!-- الكويز -->
+    <section id="quizScreen" class="card hidden">
+      <div class="hearts" id="hearts"></div>
 
-    <div class="bow">🎀</div>
+      <div class="question-number" id="questionNumber"></div>
 
-    <p id="welcome"></p>
+      <div class="question" id="questionText"></div>
 
-    <div class="progress">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <p class="question-number" id="questionNumber"></p>
-
-    <h2 id="questionText"></h2>
-
-    <div id="answers"></div>
-
-  </main>
+      <div class="answers" id="answers"></div>
+    </section>
 
 
-  <!-- صفحة النتيجة -->
-  <main class="card hidden" id="resultPage">
+    <!-- النتيجة -->
+    <section id="resultScreen" class="card hidden">
+      <div class="crown">👑</div>
 
-    <div class="bow">🎀</div>
+      <h2>انتهت المحاولة</h2>
 
-    <h1>خلص الاختبار! ♡</h1>
+      <div class="score" id="finalScore"></div>
 
-    <p id="resultName"></p>
+      <div class="hearts" id="finalHearts"></div>
 
-    <div class="score" id="score"></div>
+      <p class="result-text" id="resultText"></p>
 
-    <p class="message" id="resultMessage"></p>
+      <button class="primary" id="retryBtn">
+        محاولة جديدة
+      </button>
 
-    <button onclick="restartQuiz()">
-      🎀 إعادة الاختبار
-    </button>
-
-    <div class="hearts">
-      ♡ ♡ ♡ ♡ ♡
-    </div>
+      <button class="secondary" id="homeBtn">
+        العودة للبداية
+      </button>
+    </section>
 
   </main>
 
 
 <script>
+  /* =========================================================
+     SUPABASE
+     ========================================================= */
 
-  /*
-    الأسئلة التجريبية
-    لاحقًا بنبدلها بأسئلة جودي الحقيقية
-  */
+  const SUPABASE_URL = "https://tferyxorlxacsvtafknu.supabase.co";
 
-  const questions = [
+
+  const SUPABASE_KEY = "
+create table public.quiz_attempts (
+  id bigint generated always as identity primary key,
+  name text not null,
+  score integer not null,
+  total_questions integer not null default 12,
+  hearts_left integer not null,
+  started_at timestamptz not null,
+  submitted_at timestamptz not null default now()
+);
+
+alter table public.quiz_attempts enable row level security;
+
+create policy "Anyone can submit quiz attempts"
+on public.quiz_attempts
+for insert
+to anon
+with check (
+  length(trim(name)) between 1 and 40
+  and score between 0 and total_questions
+  and total_questions = 12
+  and hearts_left between 0 and 5
+  and started_at <= now() + interval '5 minutes'
+);";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+  /* =========================================================
+     QUESTIONS
+     24 سؤال - يتم اختيار 12 عشوائيًا كل محاولة
+     ========================================================= */
+
+  const questionBank = [
 
     {
+      id: 1,
       question: "شو لون جودي المفضل؟ 🎀",
-      answers: [
-        "الوردي",
-        "الأزرق",
-        "الأخضر",
-        "الأسود"
-      ],
-      correct: 0
+      answers: ["الأزرق", "الوردي", "الأخضر", "البنفسجي"],
+      correct: "الوردي"
     },
 
     {
-      question: "شو أكثر شيء بتحبه جودي؟ 💗",
-      answers: [
-        "النوم",
-        "المغامرات",
-        "المفاجآت",
-        "كل ما سبق"
-      ],
-      correct: 3
+      id: 2,
+      question: "شو أكثر شيء جودي ممكن تعتبره أسلوب حياة؟ 😴",
+      answers: ["الرياضة", "النوم", "السفر", "التسوق"],
+      correct: "النوم"
     },
 
     {
-      question: "لو جودي اختارت يوم مثالي، شو بتختار؟ ✨",
-      answers: [
-        "تقعد بالبيت",
-        "تطلع مع أصحابها",
-        "تنام طول اليوم",
-        "حسب المزاج 😂"
-      ],
-      correct: 3
+      id: 3,
+      question: "أي هواية هي المفضلة عند جودي رغم إنها تعرف كل هالهوايات؟ ✨",
+      answers: ["الرسم", "الفخار والخزف", "كتابة الشعر", "تسريح الشعر"],
+      correct: "تسريح الشعر"
     },
 
     {
-      question: "قديش أنت واثق إنك بتعرف جودي؟ 👀",
-      answers: [
-        "100%",
-        "80%",
-        "50%",
-        "الله أعلم 😂"
-      ],
-      correct: 0
+      id: 4,
+      question: "جودي بتحب تعمل شو بالمطبخ؟ 🍰",
+      answers: ["المعجنات فقط", "الحلويات", "الشوربات", "ولا شيء"],
+      correct: "الحلويات"
     },
 
     {
-      question: "آخر سؤال... جودي تستاهل كم من 10؟ 👑",
-      answers: [
-        "10/10",
-        "100/10",
-        "1000/10",
-        "السؤال نفسه ظالم لأنها تستاهل اللانهاية"
-      ],
-      correct: 3
+      id: 5,
+      question: "إذا جودي زعلت، شو غالبًا بتعمل؟ 😴",
+      answers: ["تنام", "تطلع تتمشى", "تتصل بالجميع", "تكتب منشور"],
+      correct: "تنام"
+    },
+
+    {
+      id: 6,
+      question: "إذا حدا شاف جودي وهي زعلانة، شو أفضل تصرف؟ 👀",
+      answers: ["يسألها مليون سؤال", "يضحكها غصب", "ما يحكي معها", "يعطيها محاضرة"],
+      correct: "ما يحكي معها"
+    },
+
+    {
+      id: 7,
+      question: "شو موقف جودي من الكذب في العلاقات؟ 🚫",
+      answers: ["عادي أحيانًا", "حسب الشخص", "خط أحمر", "ما بتهتم"],
+      correct: "خط أحمر"
+    },
+
+    {
+      id: 8,
+      question: "جودي اجتماعية وبتعرف ناس كثير، بس شو بتحب كمان؟ 🌙",
+      answers: ["العزلة", "الضجيج دائمًا", "المنافسة", "الازدحام"],
+      correct: "العزلة"
+    },
+
+    {
+      id: 9,
+      question: "شو رأي جودي بآراء الناس ومشاعرهم؟ 👑",
+      answers: ["دائمًا أهم من نفسها", "ما عندها رأي", "نفسها أولًا", "تتبع رأي الأغلبية"],
+      correct: "نفسها أولًا"
+    },
+
+    {
+      id: 10,
+      question: "جودي بتحب الناس اللي شو بيعملوا؟ 😂",
+      answers: ["يخلّوها تضحك", "يناقشوها طول الوقت", "ينتقدوها", "يعملوا مشاكل"],
+      correct: "يخلّوها تضحك"
+    },
+
+    {
+      id: 11,
+      question: "أي نوع من الناس جودي ما بتحب وجوده حولها؟ 🫠",
+      answers: ["الناس الإيجابيين", "الناس اللي يحاولوا يفهموها", "الناس اللي ينقلوا السلبية", "الناس اللي يضحكوها"],
+      correct: "الناس اللي ينقلوا السلبية"
+    },
+
+    {
+      id: 12,
+      question: "شو الشيء اللي جودي تقدّره بالشخص أكثر؟ 💗",
+      answers: ["يحاول يفهمها", "يحكم عليها بسرعة", "يفسرها حسب مزاجه", "يتجاهلها"],
+      correct: "يحاول يفهمها"
+    },
+
+    {
+      id: 13,
+      question: "أي صفة ممكن تجذب جودي بالشخص؟ 👀",
+      answers: ["الطيبة والتفهم", "العصبية", "الغرور", "البرود"],
+      correct: "الطيبة والتفهم"
+    },
+
+    {
+      id: 14,
+      question: "وفي تفصيل صغير ممكن يلفت انتباه جودي؟ 😏",
+      answers: ["الغمازات", "النظارات", "القبعة", "الصوت العالي"],
+      correct: "الغمازات"
+    },
+
+    {
+      id: 15,
+      question: "مين من أكثر الناس اللي جودي بتحبهم؟ 🐈",
+      answers: ["نفسها وقطتها", "كل الناس بالتساوي", "المشاهير", "الجيران"],
+      correct: "نفسها وقطتها"
+    },
+
+    {
+      id: 16,
+      question: "جودي إذا صار معها موقف، كيف ممكن تتعامل مع المشاعر؟ 🧠",
+      answers: ["بعقلانية فقط", "بعقل عاطفي", "بدون مشاعر نهائيًا", "تترك غيرها يقرر"],
+      correct: "بعقل عاطفي"
+    },
+
+    {
+      id: 17,
+      question: "شو ممكن يوصف مزاج جودي؟ 🌦️",
+      answers: ["ثابت جدًا", "متقلب", "ما بتتغير مشاعرها", "دائمًا غاضبة"],
+      correct: "متقلب"
+    },
+
+    {
+      id: 18,
+      question: "جودي ممكن تبكي بسرعة لأنها... 🥹",
+      answers: ["حساسة وعاطفية", "ما بتحس بشيء", "تحب الدراما فقط", "ما بتعرف تعبر"],
+      correct: "حساسة وعاطفية"
+    },
+
+    {
+      id: 19,
+      question: "أي جملة أقرب لفلسفة جودي بالنوم؟ 😴",
+      answers: ["أنام قليلًا", "النوم مضيعة وقت", "بنام أكثر مما أعيش", "النوم للويكند فقط"],
+      correct: "بنام أكثر مما أعيش"
+    },
+
+    {
+      id: 20,
+      question: "شو موقف جودي من الشخص اللي ما يحبها؟ 👀",
+      answers: ["تحاول ترضيه", "تتأثر كثيرًا", "ما تهتم فيه", "تغير شخصيتها عشانه"],
+      correct: "ما تهتم فيه"
+    },
+
+    {
+      id: 21,
+      question: "إذا بدنا نختصر ثقة جودي بنفسها بجملة؟ 👑",
+      answers: ["تحب تقارن نفسها بالناس", "الكوين جوجو لا تقارن بحدا", "دائمًا تشك بنفسها", "تفضل تكون مثل غيرها"],
+      correct: "الكوين جوجو لا تقارن بحدا"
+    },
+
+    {
+      id: 22,
+      question: "جودي بتحب الناس اللي... 💗",
+      answers: ["يحبوا وجودها", "يتجاهلوها", "ينتقدوها باستمرار", "يحاولوا يغيروها"],
+      correct: "يحبوا وجودها"
+    },
+
+    {
+      id: 23,
+      question: "قديش جودي بتقيّم نفسها؟ 👑",
+      answers: ["10/10", "100/10", "1000/10", "الكوين جودي لا تقيم"],
+      correct: "الكوين جودي لا تقيم"
+    },
+
+    {
+      id: 24,
+      question: "إذا بدنا نعرف مين الأولوية عند جودي... 💅",
+      answers: ["آراء الناس", "نفسها", "كل شخص حولها", "رأي المجتمع"],
+      correct: "نفسها"
     }
-
   ];
 
 
-  let currentQuestion = 0;
+  /* =========================================================
+     VARIABLES
+     ========================================================= */
+
+  const QUESTIONS_PER_GAME = 12;
+  const MAX_HEARTS = 5;
+
+  let currentQuestions = [];
+  let currentQuestionIndex = 0;
   let score = 0;
-  let visitorName = "";
+  let hearts = MAX_HEARTS;
+  let playerName = "";
+  let startedAt = null;
+  let isSubmitting = false;
 
 
-  function startQuiz() {
+  /* =========================================================
+     ELEMENTS
+     ========================================================= */
 
-    const input = document.getElementById("visitorName");
+  const startScreen = document.getElementById("startScreen");
+  const quizScreen = document.getElementById("quizScreen");
+  const resultScreen = document.getElementById("resultScreen");
 
-    visitorName = input.value.trim();
+  const nameInput = document.getElementById("nameInput");
+  const nameError = document.getElementById("nameError");
 
-    if (visitorName === "") {
+  const startBtn = document.getElementById("startBtn");
 
-      document.getElementById("nameMessage").textContent =
-        "اكتبي اسمك أولًا يا حلوة ♡";
+  const heartsEl = document.getElementById("hearts");
+  const questionNumberEl = document.getElementById("questionNumber");
+  const questionTextEl = document.getElementById("questionText");
+  const answersEl = document.getElementById("answers");
 
+  const finalScoreEl = document.getElementById("finalScore");
+  const finalHeartsEl = document.getElementById("finalHearts");
+  const resultTextEl = document.getElementById("resultText");
+
+  const retryBtn = document.getElementById("retryBtn");
+  const homeBtn = document.getElementById("homeBtn");
+
+
+  /* =========================================================
+     NAME VALIDATION
+     يسمح بالحروف والمسافات والإيموجي
+     ويمنع علامات الترقيم والرموز العادية
+     ========================================================= */
+
+  function removeEmoji(text) {
+    return text.replace(
+      /(?:\p{Extended_Pictographic}|\p{Emoji_Presentation})(?:\uFE0F|\u200D(?:\p{Extended_Pictographic}|\p{Emoji_Presentation})|\p{Emoji_Modifier})*/gu,
+      ""
+    );
+  }
+
+  function isValidName(name) {
+    const clean = name.trim();
+
+    if (!clean) return false;
+    if (clean.length > 40) return false;
+
+    const withoutEmoji = removeEmoji(clean)
+      .replace(/\uFE0F/g, "")
+      .replace(/\u200D/g, "");
+
+    return /^[\p{L}\p{M}\s]+$/u.test(withoutEmoji);
+  }
+
+
+  /* =========================================================
+     RANDOMIZATION
+     ========================================================= */
+
+  function shuffle(array) {
+    const copy = [...array];
+
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+
+    return copy;
+  }
+
+
+  function chooseQuestions() {
+    const previousIds = JSON.parse(
+      localStorage.getItem("jojo_last_questions") || "[]"
+    );
+
+    let available = questionBank.filter(
+      q => !previousIds.includes(q.id)
+    );
+
+    if (available.length < QUESTIONS_PER_GAME) {
+      available = [...questionBank];
+    }
+
+    const selected = shuffle(available)
+      .slice(0, QUESTIONS_PER_GAME)
+      .map(q => ({
+        ...q,
+        answers: shuffle(q.answers)
+      }));
+
+    localStorage.setItem(
+      "jojo_last_questions",
+      JSON.stringify(selected.map(q => q.id))
+    );
+
+    return selected;
+  }
+
+
+  /* =========================================================
+     HEARTS
+     ========================================================= */
+
+  function renderHearts() {
+    heartsEl.textContent =
+      "💗 ".repeat(hearts) +
+      "🩶 ".repeat(MAX_HEARTS - hearts);
+  }
+
+  function renderFinalHearts() {
+    finalHeartsEl.textContent =
+      "💗 ".repeat(hearts) +
+      "🩶 ".repeat(MAX_HEARTS - hearts);
+  }
+
+
+  /* =========================================================
+     START
+     ========================================================= */
+
+  startBtn.addEventListener("click", startGame);
+
+  nameInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      startGame();
+    }
+  });
+
+
+  function startGame() {
+    const name = nameInput.value.trim();
+
+    if (!isValidName(name)) {
+      nameError.textContent =
+        "اكتب الاسم باستخدام الحروف والمسافات والإيموجي فقط.";
       return;
     }
 
-    localStorage.setItem("visitorName", visitorName);
+    nameError.textContent = "";
 
-    document.getElementById("startPage").classList.add("hidden");
+    playerName = name;
+    startedAt = new Date().toISOString();
 
-    document.getElementById("quizPage").classList.remove("hidden");
+    currentQuestions = chooseQuestions();
+    currentQuestionIndex = 0;
+    score = 0;
+    hearts = MAX_HEARTS;
+    isSubmitting = false;
 
-    document.getElementById("welcome").textContent =
-      "أهلًا " + visitorName + " 🎀 جاهزة؟";
+    startScreen.classList.add("hidden");
+    resultScreen.classList.add("hidden");
+    quizScreen.classList.remove("hidden");
 
-    showQuestion();
+    renderQuestion();
   }
 
 
-  function showQuestion() {
+  /* =========================================================
+     SHOW QUESTION
+     ========================================================= */
 
-    const question = questions[currentQuestion];
+  function renderQuestion() {
+    const q = currentQuestions[currentQuestionIndex];
 
-    document.getElementById("questionNumber").textContent =
-      "السؤال " + (currentQuestion + 1) + " من " + questions.length;
+    renderHearts();
 
-    document.getElementById("questionText").textContent =
-      question.question;
+    questionNumberEl.textContent =
+      `السؤال ${currentQuestionIndex + 1}`;
 
-    const answersContainer =
-      document.getElementById("answers");
+    questionTextEl.textContent = q.question;
 
-    answersContainer.innerHTML = "";
+    answersEl.innerHTML = "";
 
-    question.answers.forEach((answer, index) => {
-
+    q.answers.forEach(answer => {
       const button = document.createElement("button");
 
-      button.className = "option";
-
+      button.className = "answer";
       button.textContent = answer;
 
-      button.onclick = function() {
-        chooseAnswer(index);
-      };
+      button.addEventListener("click", () => {
+        handleAnswer(answer, q.correct, button);
+      });
 
-      answersContainer.appendChild(button);
+      answersEl.appendChild(button);
+    });
+  }
 
+
+  /* =========================================================
+     ANSWER
+     ========================================================= */
+
+  function handleAnswer(selected, correct, clickedButton) {
+    if (clickedButton.disabled) return;
+
+    const allButtons = answersEl.querySelectorAll("button");
+
+    allButtons.forEach(btn => {
+      btn.disabled = true;
     });
 
-
-    const progress =
-      ((currentQuestion) / questions.length) * 100;
-
-    document.getElementById("progressBar").style.width =
-      progress + "%";
-  }
-
-
-  function chooseAnswer(selectedAnswer) {
-
-    if (selectedAnswer === questions[currentQuestion].correct) {
+    if (selected === correct) {
       score++;
-    }
-
-    currentQuestion++;
-
-    if (currentQuestion < questions.length) {
-
-      showQuestion();
-
     } else {
-
-      showResult();
-
+      hearts--;
     }
+
+    setTimeout(() => {
+
+      if (hearts <= 0) {
+        finishGame();
+        return;
+      }
+
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex >= currentQuestions.length) {
+        finishGame();
+      } else {
+        renderQuestion();
+      }
+
+    }, 250);
   }
 
 
-  function showResult() {
+  /* =========================================================
+     FINISH + SAVE
+     ========================================================= */
 
-    document.getElementById("quizPage").classList.add("hidden");
+  async function finishGame() {
+    if (isSubmitting) return;
 
-    document.getElementById("resultPage").classList.remove("hidden");
+    isSubmitting = true;
 
-    document.getElementById("resultName").textContent =
-      "يا " + visitorName + "، نتيجتك هي:";
+    quizScreen.classList.add("hidden");
+    resultScreen.classList.remove("hidden");
 
-    document.getElementById("score").textContent =
-      score + " / " + questions.length;
+    finalScoreEl.textContent =
+      `${score} / ${QUESTIONS_PER_GAME}`;
 
+    renderFinalHearts();
 
-    let message = "";
-
-    if (score === questions.length) {
-
-      message =
-        "يااااااا ساتر 😭🎀 أنتِ تعرفي جودي أكثر من نفسها!";
-
-    } else if (score >= 3) {
-
-      message =
-        "مو بطّال يا شطورة 👀🎀 واضح إنك تعرفيها منيح!";
-
+    if (hearts <= 0) {
+      resultTextEl.textContent =
+        `انتهت القلوب. النتيجة محفوظة باسم ${playerName}.`;
     } else {
-
-      message =
-        "أوووف 😂💀 واضح بدنا نعيد دراسة جودي من البداية!";
-
+      resultTextEl.textContent =
+        `خلصت المحاولة! النتيجة محفوظة باسم ${playerName}.`;
     }
 
-    document.getElementById("resultMessage").textContent =
-      message;
+    const { error } = await supabaseClient
+      .from("quiz_attempts")
+      .insert({
+        name: playerName,
+        score: score,
+        total_questions: QUESTIONS_PER_GAME,
+        hearts_left: hearts,
+        started_at: startedAt
+      });
 
+    if (error) {
+      console.error("Supabase error:", error);
+
+      resultTextEl.textContent +=
+        " لكن حدث خطأ أثناء حفظ النتيجة.";
+    }
   }
 
 
-  function restartQuiz() {
+  /* =========================================================
+     RETRY
+     ========================================================= */
 
-    currentQuestion = 0;
-    score = 0;
+  retryBtn.addEventListener("click", () => {
+    startScreen.classList.remove("hidden");
+    resultScreen.classList.add("hidden");
 
-    document.getElementById("resultPage").classList.add("hidden");
+    nameInput.value = playerName;
+    nameError.textContent = "";
+  });
 
-    document.getElementById("startPage").classList.remove("hidden");
 
-    document.getElementById("visitorName").value = "";
+  homeBtn.addEventListener("click", () => {
+    resultScreen.classList.add("hidden");
+    startScreen.classList.remove("hidden");
 
-    document.getElementById("nameMessage").textContent = "";
-
-  }
-
+    nameInput.value = "";
+    nameError.textContent = "";
+  });
 </script>
 
 </body>
