@@ -1,275 +1,458 @@
-
-
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
-
 <head>
-
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>قديش بتعرف جودي؟ 🎀</title>
 
   <style>
-
     * {
-
       box-sizing: border-box;
-
     }
 
     body {
-
       margin: 0;
-
       min-height: 100vh;
-
       display: flex;
-
-      align-items: center;
-
       justify-content: center;
-
+      align-items: center;
       padding: 20px;
-
       font-family: Arial, sans-serif;
-
       background: #ffdce9;
-
       color: #63394c;
-
-      overflow-x: hidden;
-
     }
 
     body::before {
-
-      content: "♡  🎀  ♡  ✨  ♡  🎀  ♡";
-
+      content: "♡ 🎀 ♡ ✨ ♡ 🎀 ♡";
       position: fixed;
-
-      top: 25px;
-
+      top: 20px;
       left: 0;
-
       right: 0;
-
       text-align: center;
-
       font-size: 24px;
-
-      opacity: 0.45;
-
-      pointer-events: none;
-
+      opacity: 0.5;
     }
 
     .card {
-
       width: 100%;
-
-      max-width: 420px;
-
-      padding: 35px 24px;
-
-      text-align: center;
-
-      background: rgba(255, 255, 255, 0.94);
-
+      max-width: 500px;
+      padding: 32px 24px;
+      background: rgba(255,255,255,0.96);
       border: 2px solid #f6b8cf;
-
       border-radius: 30px;
-
-      box-shadow: 0 15px 40px rgba(177, 91, 125, 0.15);
-
+      box-shadow: 0 15px 40px rgba(177,91,125,0.15);
+      text-align: center;
     }
 
     .bow {
-
       font-size: 55px;
-
-      margin-bottom: 10px;
-
+      margin-bottom: 8px;
     }
 
     h1 {
-
-      margin: 0 0 14px;
-
+      margin: 0 0 15px;
       color: #c85c89;
-
       font-size: 29px;
+    }
 
+    h2 {
+      color: #c85c89;
     }
 
     p {
-
-      line-height: 1.9;
-
-      font-size: 16px;
-
+      line-height: 1.8;
     }
 
     .subtitle {
-
       color: #986477;
-
     }
 
     input {
-
       width: 100%;
-
       padding: 16px;
-
       margin: 18px 0 14px;
-
       border: 2px solid #f2bdd2;
-
       border-radius: 16px;
-
       text-align: center;
-
       font-size: 16px;
-
       outline: none;
-
       color: #63394c;
-
       background: #fff8fb;
-
     }
 
     input:focus {
-
       border-color: #d978a0;
-
     }
 
     button {
-
       width: 100%;
-
-      padding: 16px;
-
+      padding: 15px;
+      margin-top: 10px;
       border: none;
-
       border-radius: 18px;
-
       background: #e98db2;
-
       color: white;
-
       font-size: 17px;
-
       font-weight: bold;
-
       cursor: pointer;
-
       box-shadow: 0 5px 0 #c96891;
-
     }
 
     button:active {
-
       transform: translateY(3px);
-
       box-shadow: 0 2px 0 #c96891;
+    }
 
+    .option {
+      background: #fff3f8;
+      color: #63394c;
+      border: 2px solid #f3bfd4;
+      box-shadow: none;
+      margin-top: 12px;
+    }
+
+    .option:hover {
+      background: #ffe3ef;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .question-number {
+      color: #c85c89;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 10px;
+      background: #f8d9e5;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 15px 0 25px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #e98db2;
+      transition: width 0.3s;
+    }
+
+    .score {
+      font-size: 55px;
+      color: #c85c89;
+      font-weight: bold;
+      margin: 15px 0;
     }
 
     .message {
-
-      min-height: 24px;
-
-      color: #c24f7f;
-
-      font-size: 14px;
-
+      color: #986477;
+      font-size: 17px;
     }
 
     .hearts {
-
-      margin-top: 24px;
-
+      margin-top: 25px;
       color: #e98db2;
-
       letter-spacing: 6px;
-
       font-size: 20px;
-
     }
-
   </style>
-
 </head>
 
 <body>
 
-  <main class="card">
+  <!-- الصفحة الأولى -->
+  <main class="card" id="startPage">
 
     <div class="bow">🎀</div>
 
     <h1>قديش بتعرف جودي؟</h1>
 
     <p class="subtitle">
-
       قبل ما نبدأ... خلينا نعرف مين إنتِ أو إنتَ ♡
-
     </p>
 
     <input
-
       id="visitorName"
-
       type="text"
-
       placeholder="اكتب اسمك هون ♡"
-
       maxlength="40"
-
     >
 
-    <p id="message" class="message"></p>
+    <p id="nameMessage"></p>
 
     <button onclick="startQuiz()">
-
       ♡ دخول ♡
-
     </button>
 
-    <div class="hearts">♡ ♡ ♡ ♡ ♡</div>
+    <div class="hearts">
+      ♡ ♡ ♡ ♡ ♡
+    </div>
 
   </main>
 
-  <script>
 
-    function startQuiz() {
+  <!-- صفحة الأسئلة -->
+  <main class="card hidden" id="quizPage">
 
-      const name = document.getElementById("visitorName").value.trim();
+    <div class="bow">🎀</div>
 
-      const message = document.getElementById("message");
+    <p id="welcome"></p>
 
-      if (name === "") {
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
 
-        message.textContent = "اكتبي اسمك أولًا يا حلوة ♡";
+    <p class="question-number" id="questionNumber"></p>
 
-        return;
+    <h2 id="questionText"></h2>
 
-      }
+    <div id="answers"></div>
 
-      localStorage.setItem("visitorName", name);
+  </main>
 
-      message.textContent = "أهلًا " + name + " 🎀";
 
-      alert("أهلًا " + name + "! التحدي رح يبدأ قريبًا ♡");
+  <!-- صفحة النتيجة -->
+  <main class="card hidden" id="resultPage">
+
+    <div class="bow">🎀</div>
+
+    <h1>خلص الاختبار! ♡</h1>
+
+    <p id="resultName"></p>
+
+    <div class="score" id="score"></div>
+
+    <p class="message" id="resultMessage"></p>
+
+    <button onclick="restartQuiz()">
+      🎀 إعادة الاختبار
+    </button>
+
+    <div class="hearts">
+      ♡ ♡ ♡ ♡ ♡
+    </div>
+
+  </main>
+
+
+<script>
+
+  /*
+    الأسئلة التجريبية
+    لاحقًا بنبدلها بأسئلة جودي الحقيقية
+  */
+
+  const questions = [
+
+    {
+      question: "شو لون جودي المفضل؟ 🎀",
+      answers: [
+        "الوردي",
+        "الأزرق",
+        "الأخضر",
+        "الأسود"
+      ],
+      correct: 0
+    },
+
+    {
+      question: "شو أكثر شيء بتحبه جودي؟ 💗",
+      answers: [
+        "النوم",
+        "المغامرات",
+        "المفاجآت",
+        "كل ما سبق"
+      ],
+      correct: 3
+    },
+
+    {
+      question: "لو جودي اختارت يوم مثالي، شو بتختار؟ ✨",
+      answers: [
+        "تقعد بالبيت",
+        "تطلع مع أصحابها",
+        "تنام طول اليوم",
+        "حسب المزاج 😂"
+      ],
+      correct: 3
+    },
+
+    {
+      question: "قديش أنت واثق إنك بتعرف جودي؟ 👀",
+      answers: [
+        "100%",
+        "80%",
+        "50%",
+        "الله أعلم 😂"
+      ],
+      correct: 0
+    },
+
+    {
+      question: "آخر سؤال... جودي تستاهل كم من 10؟ 👑",
+      answers: [
+        "10/10",
+        "100/10",
+        "1000/10",
+        "السؤال نفسه ظالم لأنها تستاهل اللانهاية"
+      ],
+      correct: 3
+    }
+
+  ];
+
+
+  let currentQuestion = 0;
+  let score = 0;
+  let visitorName = "";
+
+
+  function startQuiz() {
+
+    const input = document.getElementById("visitorName");
+
+    visitorName = input.value.trim();
+
+    if (visitorName === "") {
+
+      document.getElementById("nameMessage").textContent =
+        "اكتبي اسمك أولًا يا حلوة ♡";
+
+      return;
+    }
+
+    localStorage.setItem("visitorName", visitorName);
+
+    document.getElementById("startPage").classList.add("hidden");
+
+    document.getElementById("quizPage").classList.remove("hidden");
+
+    document.getElementById("welcome").textContent =
+      "أهلًا " + visitorName + " 🎀 جاهزة؟";
+
+    showQuestion();
+  }
+
+
+  function showQuestion() {
+
+    const question = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+      "السؤال " + (currentQuestion + 1) + " من " + questions.length;
+
+    document.getElementById("questionText").textContent =
+      question.question;
+
+    const answersContainer =
+      document.getElementById("answers");
+
+    answersContainer.innerHTML = "";
+
+    question.answers.forEach((answer, index) => {
+
+      const button = document.createElement("button");
+
+      button.className = "option";
+
+      button.textContent = answer;
+
+      button.onclick = function() {
+        chooseAnswer(index);
+      };
+
+      answersContainer.appendChild(button);
+
+    });
+
+
+    const progress =
+      ((currentQuestion) / questions.length) * 100;
+
+    document.getElementById("progressBar").style.width =
+      progress + "%";
+  }
+
+
+  function chooseAnswer(selectedAnswer) {
+
+    if (selectedAnswer === questions[currentQuestion].correct) {
+      score++;
+    }
+
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+
+      showQuestion();
+
+    } else {
+
+      showResult();
+
+    }
+  }
+
+
+  function showResult() {
+
+    document.getElementById("quizPage").classList.add("hidden");
+
+    document.getElementById("resultPage").classList.remove("hidden");
+
+    document.getElementById("resultName").textContent =
+      "يا " + visitorName + "، نتيجتك هي:";
+
+    document.getElementById("score").textContent =
+      score + " / " + questions.length;
+
+
+    let message = "";
+
+    if (score === questions.length) {
+
+      message =
+        "يااااااا ساتر 😭🎀 أنتِ تعرفي جودي أكثر من نفسها!";
+
+    } else if (score >= 3) {
+
+      message =
+        "مو بطّال يا شطورة 👀🎀 واضح إنك تعرفيها منيح!";
+
+    } else {
+
+      message =
+        "أوووف 😂💀 واضح بدنا نعيد دراسة جودي من البداية!";
 
     }
 
-  </script>
+    document.getElementById("resultMessage").textContent =
+      message;
+
+  }
+
+
+  function restartQuiz() {
+
+    currentQuestion = 0;
+    score = 0;
+
+    document.getElementById("resultPage").classList.add("hidden");
+
+    document.getElementById("startPage").classList.remove("hidden");
+
+    document.getElementById("visitorName").value = "";
+
+    document.getElementById("nameMessage").textContent = "";
+
+  }
+
+</script>
 
 </body>
-
 </html>
