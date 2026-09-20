@@ -1,0 +1,275 @@
+
+
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>قديش بتعرف جودي؟ 🎀</title>
+
+  <style>
+
+    * {
+
+      box-sizing: border-box;
+
+    }
+
+    body {
+
+      margin: 0;
+
+      min-height: 100vh;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 20px;
+
+      font-family: Arial, sans-serif;
+
+      background: #ffdce9;
+
+      color: #63394c;
+
+      overflow-x: hidden;
+
+    }
+
+    body::before {
+
+      content: "♡  🎀  ♡  ✨  ♡  🎀  ♡";
+
+      position: fixed;
+
+      top: 25px;
+
+      left: 0;
+
+      right: 0;
+
+      text-align: center;
+
+      font-size: 24px;
+
+      opacity: 0.45;
+
+      pointer-events: none;
+
+    }
+
+    .card {
+
+      width: 100%;
+
+      max-width: 420px;
+
+      padding: 35px 24px;
+
+      text-align: center;
+
+      background: rgba(255, 255, 255, 0.94);
+
+      border: 2px solid #f6b8cf;
+
+      border-radius: 30px;
+
+      box-shadow: 0 15px 40px rgba(177, 91, 125, 0.15);
+
+    }
+
+    .bow {
+
+      font-size: 55px;
+
+      margin-bottom: 10px;
+
+    }
+
+    h1 {
+
+      margin: 0 0 14px;
+
+      color: #c85c89;
+
+      font-size: 29px;
+
+    }
+
+    p {
+
+      line-height: 1.9;
+
+      font-size: 16px;
+
+    }
+
+    .subtitle {
+
+      color: #986477;
+
+    }
+
+    input {
+
+      width: 100%;
+
+      padding: 16px;
+
+      margin: 18px 0 14px;
+
+      border: 2px solid #f2bdd2;
+
+      border-radius: 16px;
+
+      text-align: center;
+
+      font-size: 16px;
+
+      outline: none;
+
+      color: #63394c;
+
+      background: #fff8fb;
+
+    }
+
+    input:focus {
+
+      border-color: #d978a0;
+
+    }
+
+    button {
+
+      width: 100%;
+
+      padding: 16px;
+
+      border: none;
+
+      border-radius: 18px;
+
+      background: #e98db2;
+
+      color: white;
+
+      font-size: 17px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      box-shadow: 0 5px 0 #c96891;
+
+    }
+
+    button:active {
+
+      transform: translateY(3px);
+
+      box-shadow: 0 2px 0 #c96891;
+
+    }
+
+    .message {
+
+      min-height: 24px;
+
+      color: #c24f7f;
+
+      font-size: 14px;
+
+    }
+
+    .hearts {
+
+      margin-top: 24px;
+
+      color: #e98db2;
+
+      letter-spacing: 6px;
+
+      font-size: 20px;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <main class="card">
+
+    <div class="bow">🎀</div>
+
+    <h1>قديش بتعرف جودي؟</h1>
+
+    <p class="subtitle">
+
+      قبل ما نبدأ... خلينا نعرف مين إنتِ أو إنتَ ♡
+
+    </p>
+
+    <input
+
+      id="visitorName"
+
+      type="text"
+
+      placeholder="اكتب اسمك هون ♡"
+
+      maxlength="40"
+
+    >
+
+    <p id="message" class="message"></p>
+
+    <button onclick="startQuiz()">
+
+      ♡ دخول ♡
+
+    </button>
+
+    <div class="hearts">♡ ♡ ♡ ♡ ♡</div>
+
+  </main>
+
+  <script>
+
+    function startQuiz() {
+
+      const name = document.getElementById("visitorName").value.trim();
+
+      const message = document.getElementById("message");
+
+      if (name === "") {
+
+        message.textContent = "اكتبي اسمك أولًا يا حلوة ♡";
+
+        return;
+
+      }
+
+      localStorage.setItem("visitorName", name);
+
+      message.textContent = "أهلًا " + name + " 🎀";
+
+      alert("أهلًا " + name + "! التحدي رح يبدأ قريبًا ♡");
+
+    }
+
+  </script>
+
+</body>
+
+</html>
