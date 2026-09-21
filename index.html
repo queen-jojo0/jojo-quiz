@@ -258,30 +258,8 @@
   const SUPABASE_URL = "https://tferyxorlxacsvtafknu.supabase.co";
 
 
-  const SUPABASE_KEY = "
-create table public.quiz_attempts (
-  id bigint generated always as identity primary key,
-  name text not null,
-  score integer not null,
-  total_questions integer not null default 12,
-  hearts_left integer not null,
-  started_at timestamptz not null,
-  submitted_at timestamptz not null default now()
-);
-
-alter table public.quiz_attempts enable row level security;
-
-create policy "Anyone can submit quiz attempts"
-on public.quiz_attempts
-for insert
-to anon
-with check (
-  length(trim(name)) between 1 and 40
-  and score between 0 and total_questions
-  and total_questions = 12
-  and hearts_left between 0 and 5
-  and started_at <= now() + interval '5 minutes'
-);";
+  const SUPABASE_KEY = " const SUPABASE_URL="https://tferyxorlxacsvtafknu.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RnB0_kGPWFXyIcNwlnTckw_pSjnI26M";  
 
   const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
