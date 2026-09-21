@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jojo Quiz 👑</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -17,7 +18,7 @@
       min-height: 100vh;
       font-family: Arial, Tahoma, sans-serif;
       background:
-        radial-gradient(circle at top, #fff 0%, #ffe8f2 35%, #ffd0e2 100%);
+        radial-gradient(circle at top, #ffffff 0%, #ffe8f2 35%, #ffd0e2 100%);
       color: #4b2035;
     }
 
@@ -28,11 +29,11 @@
     }
 
     .card {
-      background: rgba(255,255,255,.92);
+      background: rgba(255, 255, 255, 0.94);
       border-radius: 30px;
       padding: 28px 22px;
-      box-shadow: 0 18px 55px rgba(180, 65, 110, .18);
-      border: 1px solid rgba(255,255,255,.9);
+      box-shadow: 0 18px 55px rgba(180, 65, 110, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.9);
     }
 
     .hidden {
@@ -45,7 +46,8 @@
       margin-bottom: 8px;
     }
 
-    h1, h2 {
+    h1,
+    h2 {
       text-align: center;
       margin: 8px 0 12px;
     }
@@ -89,13 +91,13 @@
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
-      transition: .2s;
+      transition: 0.2s;
     }
 
     .primary {
       background: linear-gradient(135deg, #ed79a6, #c94f83);
       color: white;
-      box-shadow: 0 10px 25px rgba(201,79,131,.25);
+      box-shadow: 0 10px 25px rgba(201, 79, 131, 0.25);
     }
 
     .primary:hover {
@@ -147,7 +149,7 @@
       color: #59263e;
       border: 2px solid #f4c6d8;
       text-align: right;
-      transition: .18s;
+      transition: 0.18s;
     }
 
     .answer:hover {
@@ -156,7 +158,7 @@
     }
 
     .answer:disabled {
-      opacity: .75;
+      opacity: 0.75;
       cursor: default;
     }
 
@@ -184,23 +186,26 @@
 </head>
 
 <body>
+
   <main class="app">
 
     <!-- البداية -->
     <section id="startScreen" class="card">
+
       <div class="crown">👑</div>
+
       <h1>اختبار جودي</h1>
 
       <p class="subtitle">
-        كم تعرف عن جودي فعلًا؟<br>
-        أسئلة عشوائية، قلوب محدودة، والكوين جودي لا تُقارن. 💗
+        اختبر معلوماتك عن جودي 💗<br>
+        أسئلة عشوائية، قلوب محدودة، والكوين جودي لا تُقارن.
       </p>
 
       <input
         id="nameInput"
         type="text"
         maxlength="40"
-        placeholder="اكتب الاسم"
+        placeholder="الاسم"
         autocomplete="off"
       />
 
@@ -210,12 +215,16 @@
         ابدأ الاختبار
       </button>
 
-      <p class="tiny">كل محاولة تُحفظ بشكل مستقل.</p>
+      <p class="tiny">
+        كل محاولة تُحفظ بشكل مستقل.
+      </p>
+
     </section>
 
 
-    <!-- الكويز -->
+    <!-- الاختبار -->
     <section id="quizScreen" class="card hidden">
+
       <div class="hearts" id="hearts"></div>
 
       <div class="question-number" id="questionNumber"></div>
@@ -223,11 +232,13 @@
       <div class="question" id="questionText"></div>
 
       <div class="answers" id="answers"></div>
+
     </section>
 
 
     <!-- النتيجة -->
     <section id="resultScreen" class="card hidden">
+
       <div class="crown">👑</div>
 
       <h2>انتهت المحاولة</h2>
@@ -245,28 +256,34 @@
       <button class="secondary" id="homeBtn">
         العودة للبداية
       </button>
+
     </section>
 
   </main>
 
 
 <script>
-  /* =========================================================
+
+  /* =====================================================
      SUPABASE
-     ========================================================= */
+     ===================================================== */
 
-   const SUPABASE_URL="https://tferyxorlxacsvtafknu.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZXJ5eG9ybHhhY3N2dGFma251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjcwMDUsImV4cCI6MjEwNTUwMzAwNX0.XTN9k_0qmwSCvQMG1er2s-5H-5XRk5edIC-8gat9VSg";  
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+  const SUPABASE_URL =
+    "https://tferyxorlxacsvtafknu.supabase.co";
+
+  const SUPABASE_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZXJ5eG9ybHhhY3N2dGFma251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjcwMDUsImV4cCI6MjEwNTUwMzAwNX0.XTN9k_0qmwSCvQMG1er2s-5H-5XRk5edIC-8gat9VSg";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
 
 
-  /* =========================================================
-     QUESTIONS
-     24 سؤال - يتم اختيار 12 عشوائيًا كل محاولة
-     ========================================================= */
+  /* =====================================================
+     الأسئلة
+     ===================================================== */
 
   const questionBank = [
 
@@ -308,144 +325,241 @@ const supabaseClient = window.supabase.createClient(
     {
       id: 6,
       question: "إذا حدا شاف جودي وهي زعلانة، شو أفضل تصرف؟ 👀",
-      answers: ["يسألها مليون سؤال", "يضحكها غصب", "ما يحكي معها", "يعطيها محاضرة"],
+      answers: [
+        "يسألها مليون سؤال",
+        "يضحكها غصب",
+        "ما يحكي معها",
+        "يعطيها محاضرة"
+      ],
       correct: "ما يحكي معها"
     },
 
     {
       id: 7,
       question: "شو موقف جودي من الكذب في العلاقات؟ 🚫",
-      answers: ["عادي أحيانًا", "حسب الشخص", "خط أحمر", "ما بتهتم"],
+      answers: [
+        "عادي أحيانًا",
+        "حسب الشخص",
+        "خط أحمر",
+        "ما بتهتم"
+      ],
       correct: "خط أحمر"
     },
 
     {
       id: 8,
       question: "جودي اجتماعية وبتعرف ناس كثير، بس شو بتحب كمان؟ 🌙",
-      answers: ["العزلة", "الضجيج دائمًا", "المنافسة", "الازدحام"],
+      answers: [
+        "العزلة",
+        "الضجيج دائمًا",
+        "المنافسة",
+        "الازدحام"
+      ],
       correct: "العزلة"
     },
 
     {
       id: 9,
       question: "شو رأي جودي بآراء الناس ومشاعرهم؟ 👑",
-      answers: ["دائمًا أهم من نفسها", "ما عندها رأي", "نفسها أولًا", "تتبع رأي الأغلبية"],
+      answers: [
+        "دائمًا أهم من نفسها",
+        "ما عندها رأي",
+        "نفسها أولًا",
+        "تتبع رأي الأغلبية"
+      ],
       correct: "نفسها أولًا"
     },
 
     {
       id: 10,
       question: "جودي بتحب الناس اللي شو بيعملوا؟ 😂",
-      answers: ["يخلّوها تضحك", "يناقشوها طول الوقت", "ينتقدوها", "يعملوا مشاكل"],
+      answers: [
+        "يخلّوها تضحك",
+        "يناقشوها طول الوقت",
+        "ينتقدوها",
+        "يعملوا مشاكل"
+      ],
       correct: "يخلّوها تضحك"
     },
 
     {
       id: 11,
       question: "أي نوع من الناس جودي ما بتحب وجوده حولها؟ 🫠",
-      answers: ["الناس الإيجابيين", "الناس اللي يحاولوا يفهموها", "الناس اللي ينقلوا السلبية", "الناس اللي يضحكوها"],
+      answers: [
+        "الناس الإيجابيين",
+        "الناس اللي يحاولوا يفهموها",
+        "الناس اللي ينقلوا السلبية",
+        "الناس اللي يضحكوها"
+      ],
       correct: "الناس اللي ينقلوا السلبية"
     },
 
     {
       id: 12,
       question: "شو الشيء اللي جودي تقدّره بالشخص أكثر؟ 💗",
-      answers: ["يحاول يفهمها", "يحكم عليها بسرعة", "يفسرها حسب مزاجه", "يتجاهلها"],
+      answers: [
+        "يحاول يفهمها",
+        "يحكم عليها بسرعة",
+        "يفسرها حسب مزاجه",
+        "يتجاهلها"
+      ],
       correct: "يحاول يفهمها"
     },
 
     {
       id: 13,
       question: "أي صفة ممكن تجذب جودي بالشخص؟ 👀",
-      answers: ["الطيبة والتفهم", "العصبية", "الغرور", "البرود"],
+      answers: [
+        "الطيبة والتفهم",
+        "العصبية",
+        "الغرور",
+        "البرود"
+      ],
       correct: "الطيبة والتفهم"
     },
 
     {
       id: 14,
       question: "وفي تفصيل صغير ممكن يلفت انتباه جودي؟ 😏",
-      answers: ["الغمازات", "النظارات", "القبعة", "الصوت العالي"],
+      answers: [
+        "الغمازات",
+        "النظارات",
+        "القبعة",
+        "الصوت العالي"
+      ],
       correct: "الغمازات"
     },
 
     {
       id: 15,
       question: "مين من أكثر الناس اللي جودي بتحبهم؟ 🐈",
-      answers: ["نفسها وقطتها", "كل الناس بالتساوي", "المشاهير", "الجيران"],
+      answers: [
+        "نفسها وقطتها",
+        "كل الناس بالتساوي",
+        "المشاهير",
+        "الجيران"
+      ],
       correct: "نفسها وقطتها"
     },
 
     {
       id: 16,
       question: "جودي إذا صار معها موقف، كيف ممكن تتعامل مع المشاعر؟ 🧠",
-      answers: ["بعقلانية فقط", "بعقل عاطفي", "بدون مشاعر نهائيًا", "تترك غيرها يقرر"],
+      answers: [
+        "بعقلانية فقط",
+        "بعقل عاطفي",
+        "بدون مشاعر نهائيًا",
+        "تترك غيرها يقرر"
+      ],
       correct: "بعقل عاطفي"
     },
 
     {
       id: 17,
       question: "شو ممكن يوصف مزاج جودي؟ 🌦️",
-      answers: ["ثابت جدًا", "متقلب", "ما بتتغير مشاعرها", "دائمًا غاضبة"],
+      answers: [
+        "ثابت جدًا",
+        "متقلب",
+        "ما بتتغير مشاعرها",
+        "دائمًا غاضبة"
+      ],
       correct: "متقلب"
     },
 
     {
       id: 18,
       question: "جودي ممكن تبكي بسرعة لأنها... 🥹",
-      answers: ["حساسة وعاطفية", "ما بتحس بشيء", "تحب الدراما فقط", "ما بتعرف تعبر"],
+      answers: [
+        "حساسة وعاطفية",
+        "ما بتحس بشيء",
+        "تحب الدراما فقط",
+        "ما بتعرف تعبر"
+      ],
       correct: "حساسة وعاطفية"
     },
 
     {
       id: 19,
       question: "أي جملة أقرب لفلسفة جودي بالنوم؟ 😴",
-      answers: ["أنام قليلًا", "النوم مضيعة وقت", "بنام أكثر مما أعيش", "النوم للويكند فقط"],
+      answers: [
+        "أنام قليلًا",
+        "النوم مضيعة وقت",
+        "بنام أكثر مما أعيش",
+        "النوم للويكند فقط"
+      ],
       correct: "بنام أكثر مما أعيش"
     },
 
     {
       id: 20,
       question: "شو موقف جودي من الشخص اللي ما يحبها؟ 👀",
-      answers: ["تحاول ترضيه", "تتأثر كثيرًا", "ما تهتم فيه", "تغير شخصيتها عشانه"],
+      answers: [
+        "تحاول ترضيه",
+        "تتأثر كثيرًا",
+        "ما تهتم فيه",
+        "تغير شخصيتها عشانه"
+      ],
       correct: "ما تهتم فيه"
     },
 
     {
       id: 21,
       question: "إذا بدنا نختصر ثقة جودي بنفسها بجملة؟ 👑",
-      answers: ["تحب تقارن نفسها بالناس", "الكوين جوجو لا تقارن بحدا", "دائمًا تشك بنفسها", "تفضل تكون مثل غيرها"],
+      answers: [
+        "تحب تقارن نفسها بالناس",
+        "الكوين جوجو لا تقارن بحدا",
+        "دائمًا تشك بنفسها",
+        "تفضل تكون مثل غيرها"
+      ],
       correct: "الكوين جوجو لا تقارن بحدا"
     },
 
     {
       id: 22,
       question: "جودي بتحب الناس اللي... 💗",
-      answers: ["يحبوا وجودها", "يتجاهلوها", "ينتقدوها باستمرار", "يحاولوا يغيروها"],
+      answers: [
+        "يحبوا وجودها",
+        "يتجاهلوها",
+        "ينتقدوها باستمرار",
+        "يحاولوا يغيروها"
+      ],
       correct: "يحبوا وجودها"
     },
 
     {
       id: 23,
       question: "قديش جودي بتقيّم نفسها؟ 👑",
-      answers: ["10/10", "100/10", "1000/10", "الكوين جودي لا تقيم"],
+      answers: [
+        "10/10",
+        "100/10",
+        "1000/10",
+        "الكوين جودي لا تقيم"
+      ],
       correct: "الكوين جودي لا تقيم"
     },
 
     {
       id: 24,
       question: "إذا بدنا نعرف مين الأولوية عند جودي... 💅",
-      answers: ["آراء الناس", "نفسها", "كل شخص حولها", "رأي المجتمع"],
+      answers: [
+        "آراء الناس",
+        "نفسها",
+        "كل شخص حولها",
+        "رأي المجتمع"
+      ],
       correct: "نفسها"
     }
+
   ];
 
 
-  /* =========================================================
-     VARIABLES
-     ========================================================= */
+  /* =====================================================
+     إعدادات اللعبة
+     ===================================================== */
 
   const QUESTIONS_PER_GAME = 12;
   const MAX_HEARTS = 5;
+
 
   let currentQuestions = [];
   let currentQuestionIndex = 0;
@@ -456,295 +570,530 @@ const supabaseClient = window.supabase.createClient(
   let isSubmitting = false;
 
 
-  /* =========================================================
-     ELEMENTS
-     ========================================================= */
+  /* =====================================================
+     عناصر الصفحة
+     ===================================================== */
 
-  const startScreen = document.getElementById("startScreen");
-  const quizScreen = document.getElementById("quizScreen");
-  const resultScreen = document.getElementById("resultScreen");
+  const startScreen =
+    document.getElementById("startScreen");
 
-  const nameInput = document.getElementById("nameInput");
-  const nameError = document.getElementById("nameError");
+  const quizScreen =
+    document.getElementById("quizScreen");
 
-  const startBtn = document.getElementById("startBtn");
+  const resultScreen =
+    document.getElementById("resultScreen");
 
-  const heartsEl = document.getElementById("hearts");
-  const questionNumberEl = document.getElementById("questionNumber");
-  const questionTextEl = document.getElementById("questionText");
-  const answersEl = document.getElementById("answers");
+  const nameInput =
+    document.getElementById("nameInput");
 
-  const finalScoreEl = document.getElementById("finalScore");
-  const finalHeartsEl = document.getElementById("finalHearts");
-  const resultTextEl = document.getElementById("resultText");
+  const nameError =
+    document.getElementById("nameError");
 
-  const retryBtn = document.getElementById("retryBtn");
-  const homeBtn = document.getElementById("homeBtn");
+  const startBtn =
+    document.getElementById("startBtn");
+
+  const heartsEl =
+    document.getElementById("hearts");
+
+  const questionNumberEl =
+    document.getElementById("questionNumber");
+
+  const questionTextEl =
+    document.getElementById("questionText");
+
+  const answersEl =
+    document.getElementById("answers");
+
+  const finalScoreEl =
+    document.getElementById("finalScore");
+
+  const finalHeartsEl =
+    document.getElementById("finalHearts");
+
+  const resultTextEl =
+    document.getElementById("resultText");
+
+  const retryBtn =
+    document.getElementById("retryBtn");
+
+  const homeBtn =
+    document.getElementById("homeBtn");
 
 
-  /* =========================================================
-     NAME VALIDATION
-     يسمح بالحروف والمسافات والإيموجي
-     ويمنع علامات الترقيم والرموز العادية
-     ========================================================= */
+  /* =====================================================
+     التحقق من الاسم
+     ===================================================== */
 
   function removeEmoji(text) {
+
     return text.replace(
       /(?:\p{Extended_Pictographic}|\p{Emoji_Presentation})(?:\uFE0F|\u200D(?:\p{Extended_Pictographic}|\p{Emoji_Presentation})|\p{Emoji_Modifier})*/gu,
       ""
     );
+
   }
+
 
   function isValidName(name) {
+
     const clean = name.trim();
 
-    if (!clean) return false;
-    if (clean.length > 40) return false;
+    if (!clean) {
+      return false;
+    }
 
-    const withoutEmoji = removeEmoji(clean)
-      .replace(/\uFE0F/g, "")
-      .replace(/\u200D/g, "");
+    if (clean.length > 40) {
+      return false;
+    }
 
-    return /^[\p{L}\p{M}\s]+$/u.test(withoutEmoji);
+    const withoutEmoji =
+      removeEmoji(clean)
+        .replace(/\uFE0F/g, "")
+        .replace(/\u200D/g, "");
+
+    return /^[\p{L}\p{M}\s]+$/u.test(
+      withoutEmoji
+    );
+
   }
 
 
-  /* =========================================================
-     RANDOMIZATION
-     ========================================================= */
+  /* =====================================================
+     خلط العناصر
+     ===================================================== */
 
   function shuffle(array) {
+
     const copy = [...array];
 
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
+    for (
+      let i = copy.length - 1;
+      i > 0;
+      i--
+    ) {
+
+      const j =
+        Math.floor(
+          Math.random() * (i + 1)
+        );
+
+      [copy[i], copy[j]] =
+        [copy[j], copy[i]];
+
     }
 
     return copy;
   }
 
 
+  /* =====================================================
+     اختيار الأسئلة
+     ===================================================== */
+
   function chooseQuestions() {
-    const previousIds = JSON.parse(
-      localStorage.getItem("jojo_last_questions") || "[]"
-    );
 
-    let available = questionBank.filter(
-      q => !previousIds.includes(q.id)
-    );
+    const previousIds =
+      JSON.parse(
+        localStorage.getItem(
+          "jojo_last_questions"
+        ) || "[]"
+      );
 
-    if (available.length < QUESTIONS_PER_GAME) {
+    let available =
+      questionBank.filter(
+        q => !previousIds.includes(q.id)
+      );
+
+    if (
+      available.length <
+      QUESTIONS_PER_GAME
+    ) {
+
       available = [...questionBank];
+
     }
 
-    const selected = shuffle(available)
-      .slice(0, QUESTIONS_PER_GAME)
-      .map(q => ({
-        ...q,
-        answers: shuffle(q.answers)
-      }));
+    const selected =
+      shuffle(available)
+        .slice(
+          0,
+          QUESTIONS_PER_GAME
+        )
+        .map(q => ({
+          ...q,
+          answers: shuffle(q.answers)
+        }));
 
     localStorage.setItem(
       "jojo_last_questions",
-      JSON.stringify(selected.map(q => q.id))
+      JSON.stringify(
+        selected.map(q => q.id)
+      )
     );
 
     return selected;
   }
 
 
-  /* =========================================================
-     HEARTS
-     ========================================================= */
+  /* =====================================================
+     القلوب
+     ===================================================== */
 
   function renderHearts() {
+
     heartsEl.textContent =
       "💗 ".repeat(hearts) +
-      "🩶 ".repeat(MAX_HEARTS - hearts);
+      "🩶 ".repeat(
+        MAX_HEARTS - hearts
+      );
+
   }
+
 
   function renderFinalHearts() {
+
     finalHeartsEl.textContent =
       "💗 ".repeat(hearts) +
-      "🩶 ".repeat(MAX_HEARTS - hearts);
+      "🩶 ".repeat(
+        MAX_HEARTS - hearts
+      );
+
   }
 
 
-  /* =========================================================
-     START
-     ========================================================= */
+  /* =====================================================
+     بدء اللعبة
+     ===================================================== */
 
-  startBtn.addEventListener("click", startGame);
+  startBtn.addEventListener(
+    "click",
+    startGame
+  );
 
-  nameInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") {
-      startGame();
+
+  nameInput.addEventListener(
+    "keydown",
+    function(event) {
+
+      if (event.key === "Enter") {
+        startGame();
+      }
+
     }
-  });
+  );
 
 
   function startGame() {
-    const name = nameInput.value.trim();
+
+    const name =
+      nameInput.value.trim();
 
     if (!isValidName(name)) {
+
       nameError.textContent =
-        "اكتب الاسم باستخدام الحروف والمسافات والإيموجي فقط.";
+        "الاسم مطلوب، ويسمح بالحروف والمسافات والإيموجي فقط.";
+
       return;
     }
 
     nameError.textContent = "";
 
     playerName = name;
-    startedAt = new Date().toISOString();
 
-    currentQuestions = chooseQuestions();
+    startedAt =
+      new Date().toISOString();
+
+    currentQuestions =
+      chooseQuestions();
+
     currentQuestionIndex = 0;
+
     score = 0;
+
     hearts = MAX_HEARTS;
+
     isSubmitting = false;
 
-    startScreen.classList.add("hidden");
-    resultScreen.classList.add("hidden");
-    quizScreen.classList.remove("hidden");
+    startScreen.classList.add(
+      "hidden"
+    );
+
+    resultScreen.classList.add(
+      "hidden"
+    );
+
+    quizScreen.classList.remove(
+      "hidden"
+    );
 
     renderQuestion();
   }
 
 
-  /* =========================================================
-     SHOW QUESTION
-     ========================================================= */
+  /* =====================================================
+     عرض السؤال
+     ===================================================== */
 
   function renderQuestion() {
-    const q = currentQuestions[currentQuestionIndex];
+
+    const q =
+      currentQuestions[
+        currentQuestionIndex
+      ];
 
     renderHearts();
 
     questionNumberEl.textContent =
-      `السؤال ${currentQuestionIndex + 1}`;
+      `السؤال ${currentQuestionIndex + 1} من ${QUESTIONS_PER_GAME}`;
 
-    questionTextEl.textContent = q.question;
+    questionTextEl.textContent =
+      q.question;
 
     answersEl.innerHTML = "";
 
-    q.answers.forEach(answer => {
-      const button = document.createElement("button");
+    q.answers.forEach(
+      function(answer) {
 
-      button.className = "answer";
-      button.textContent = answer;
+        const button =
+          document.createElement(
+            "button"
+          );
 
-      button.addEventListener("click", () => {
-        handleAnswer(answer, q.correct, button);
-      });
+        button.className =
+          "answer";
 
-      answersEl.appendChild(button);
-    });
+        button.textContent =
+          answer;
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            handleAnswer(
+              answer,
+              q.correct,
+              button
+            );
+
+          }
+        );
+
+        answersEl.appendChild(
+          button
+        );
+
+      }
+    );
+
   }
 
 
-  /* =========================================================
-     ANSWER
-     ========================================================= */
+  /* =====================================================
+     الإجابة
+     ===================================================== */
 
-  function handleAnswer(selected, correct, clickedButton) {
-    if (clickedButton.disabled) return;
+  function handleAnswer(
+    selected,
+    correct,
+    clickedButton
+  ) {
 
-    const allButtons = answersEl.querySelectorAll("button");
-
-    allButtons.forEach(btn => {
-      btn.disabled = true;
-    });
-
-    if (selected === correct) {
-      score++;
-    } else {
-      hearts--;
+    if (clickedButton.disabled) {
+      return;
     }
 
-    setTimeout(() => {
+    const allButtons =
+      answersEl.querySelectorAll(
+        "button"
+      );
 
-      if (hearts <= 0) {
-        finishGame();
-        return;
+    allButtons.forEach(
+      function(button) {
+        button.disabled = true;
       }
+    );
 
-      currentQuestionIndex++;
 
-      if (currentQuestionIndex >= currentQuestions.length) {
-        finishGame();
-      } else {
-        renderQuestion();
-      }
+    if (selected === correct) {
 
-    }, 250);
+      score++;
+
+    } else {
+
+      hearts--;
+
+    }
+
+
+    setTimeout(
+      function() {
+
+        if (hearts <= 0) {
+
+          finishGame();
+
+          return;
+        }
+
+
+        currentQuestionIndex++;
+
+
+        if (
+          currentQuestionIndex >=
+          currentQuestions.length
+        ) {
+
+          finishGame();
+
+        } else {
+
+          renderQuestion();
+
+        }
+
+      },
+      250
+    );
+
   }
 
 
-  /* =========================================================
-     FINISH + SAVE
-     ========================================================= */
+  /* =====================================================
+     إنهاء اللعبة وحفظ النتيجة
+     ===================================================== */
 
   async function finishGame() {
-    if (isSubmitting) return;
+
+    if (isSubmitting) {
+      return;
+    }
 
     isSubmitting = true;
 
-    quizScreen.classList.add("hidden");
-    resultScreen.classList.remove("hidden");
+    quizScreen.classList.add(
+      "hidden"
+    );
+
+    resultScreen.classList.remove(
+      "hidden"
+    );
 
     finalScoreEl.textContent =
       `${score} / ${QUESTIONS_PER_GAME}`;
 
     renderFinalHearts();
 
+
     if (hearts <= 0) {
+
       resultTextEl.textContent =
         `انتهت القلوب. النتيجة محفوظة باسم ${playerName}.`;
+
     } else {
+
       resultTextEl.textContent =
         `خلصت المحاولة! النتيجة محفوظة باسم ${playerName}.`;
+
     }
 
-    const { error } = await supabaseClient
-      .from("quiz_attempts")
-      .insert({
-        name: playerName,
-        score: score,
-        total_questions: QUESTIONS_PER_GAME,
-        hearts_left: hearts,
-        started_at: startedAt
-      });
 
-    if (error) {
-      console.error("Supabase error:", error);
+    try {
+
+      const { error } =
+        await supabaseClient
+          .from("quiz_attempts")
+          .insert({
+
+            name: playerName,
+
+            score: score,
+
+            total_questions:
+              QUESTIONS_PER_GAME,
+
+            hearts_left: hearts,
+
+            started_at: startedAt
+
+          });
+
+
+      if (error) {
+
+        console.error(
+          "Supabase error:",
+          error
+        );
+
+        resultTextEl.textContent +=
+          " لكن حدث خطأ أثناء حفظ النتيجة.";
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Unexpected error:",
+        error
+      );
 
       resultTextEl.textContent +=
         " لكن حدث خطأ أثناء حفظ النتيجة.";
+
     }
+
   }
 
 
-  /* =========================================================
-     RETRY
-     ========================================================= */
+  /* =====================================================
+     إعادة المحاولة
+     ===================================================== */
 
-  retryBtn.addEventListener("click", () => {
-    startScreen.classList.remove("hidden");
-    resultScreen.classList.add("hidden");
+  retryBtn.addEventListener(
+    "click",
+    function() {
 
-    nameInput.value = playerName;
-    nameError.textContent = "";
-  });
+      startScreen.classList.remove(
+        "hidden"
+      );
+
+      resultScreen.classList.add(
+        "hidden"
+      );
+
+      nameInput.value =
+        playerName;
+
+      nameError.textContent = "";
+
+    }
+  );
 
 
-  homeBtn.addEventListener("click", () => {
-    resultScreen.classList.add("hidden");
-    startScreen.classList.remove("hidden");
+  /* =====================================================
+     العودة للبداية
+     ===================================================== */
 
-    nameInput.value = "";
-    nameError.textContent = "";
-  });
+  homeBtn.addEventListener(
+    "click",
+    function() {
+
+      resultScreen.classList.add(
+        "hidden"
+      );
+
+      startScreen.classList.remove(
+        "hidden"
+      );
+
+      nameInput.value = "";
+
+      nameError.textContent = "";
+
+    }
+  );
+
 </script>
 
 </body>
