@@ -248,14 +248,14 @@
         }
       );
 
-    if (error) {
-      console.error(error);
+if (error) {
+  console.error(error);
 
-      errorBox.textContent =
-        "رمز الدخول غير صحيح ❌";
+  errorBox.textContent =
+    "خطأ: " + error.message;
 
-      return;
-    }
+  return;
+}
 
     document.getElementById("loginScreen").style.display =
       "none";
