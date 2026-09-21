@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>إدارة اختبار جودي</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffe4ef, #fff5f9);
+      min-height: 100vh;
+      padding: 25px 15px;
+      color: #4a2635;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.94);
+      border-radius: 25px;
+      padding: 25px;
+      box-shadow: 0 10px 35px rgba(180, 70, 120, 0.15);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #c94f83;
+      margin-top: 0;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #8d6575;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: 1px solid #efb8ce;
+      border-radius: 14px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 15px;
+      background: #d85b91;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .error {
+      color: #c62828;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: #fff0f6;
+      border-radius: 18px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 25px;
+      color: #c94f83;
+      margin-top: 5px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th, td {
+      padding: 13px 10px;
+      border-bottom: 1px solid #f2d4e1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background: #ffe6f0;
+      color: #a83f6d;
+    }
+
+    tr:hover {
+      background: #fff8fb;
+    }
+
+    .logout {
+      background: #777;
+      margin-bottom: 15px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #8d6575;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 15px 10px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="card">
+      <h1>👑 لوحة إدارة اختبار جودي</h1>
+
+      <p class="subtitle">
+        هذه الصفحة خاصة بالإدارة فقط
+      </p>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="الإيميل"
+        autocomplete="email"
+      >
+
+      <input
+        id="password"
+        type="password"
+        placeholder="كلمة المرور"
+        autocomplete="current-password"
+      >
+
+      <button onclick="login()">
+        تسجيل الدخول
+      </button>
+
+      <div id="loginError" class="error"></div>
+    </div>
+
+
+    <!-- ADMIN -->
+    <div id="adminScreen" class="hidden">
+
+      <div class="card">
+        <h1>👑 نتائج اختبار جودي</h1>
+
+        <p class="subtitle">
+          كل محاولة محفوظة بشكل مستقل
+        </p>
+
+        <button class="logout" onclick="logout()">
+          تسجيل الخروج
+        </button>
+
+        <div class="stats">
+          <div class="stat">
+            عدد المحاولات
+            <strong id="attemptCount">0</strong>
+          </div>
+
+          <div class="stat">
+            أعلى نتيجة
+            <strong id="highestScore">0 / 12</strong>
+          </div>
+
+          <div class="stat">
+            آخر محاولة
+            <strong id="latestAttempt">—</strong>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card">
+
+        <div id="loading" class="loading">
+          جاري تحميل النتائج...
+        </div>
+
+        <div class="table-wrap">
+          <table id="resultsTable" class="hidden">
+
+            <thead>
+              <tr>
+                <th>التاريخ والوقت</th>
+                <th>الاسم</th>
+                <th>النتيجة</th>
+                <th>القلوب المتبقية</th>
+              </tr>
+            </thead>
+
+            <tbody id="resultsBody"></tbody>
+
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://tferyxorlxacsvtafknu.supabase.co";
+
+    const SUPABASE_KEY =
+      "ضعيeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZXJ5eG9ybHhhY3N2dGFma251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjcwMDUsImV4cCI6MjEwNTUwMzAwNX0.XTN9k_0qmwSCvQMG1er2s-5H-5XRk5edIC-8gat9VSg";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    async function login() {
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      const error =
+        document.getElementById("loginError");
+
+      error.textContent = "";
+
+      if (!email || !password) {
+        error.textContent =
+          "اكتبي الإيميل وكلمة المرور";
+        return;
+      }
+
+      const { error: loginError } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+      if (loginError) {
+
+        error.textContent =
+          "بيانات الدخول غير صحيحة أو حدث خطأ.";
+
+        return;
+      }
+
+      showAdmin();
+      loadAttempts();
+    }
+
+
+    async function showAdmin() {
+
+      document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
+
+      document
+        .getElementById("adminScreen")
+        .classList.remove("hidden");
+    }
+
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      document
+        .getElementById("adminScreen")
+        .classList.add("hidden");
+
+      document
+        .getElementById("loginScreen")
+        .classList.remove("hidden");
+
+      document.getElementById("password").value = "";
+    }
+
+
+    async function loadAttempts() {
+
+      const loading =
+        document.getElementById("loading");
+
+      const table =
+        document.getElementById("resultsTable");
+
+      const body =
+        document.getElementById("resultsBody");
+
+      loading.classList.remove("hidden");
+      table.classList.add("hidden");
+      body.innerHTML = "";
+
+      const { data, error } =
+        await supabaseClient
+          .from("quiz_attempts")
+          .select(
+            "name, score, total_questions, hearts_left, started_at"
+          )
+          .order("started_at", {
+            ascending: false
+          });
+
+
+      if (error) {
+
+        loading.textContent =
+          "حدث خطأ أثناء تحميل النتائج.";
+
+        console.error(error);
+
+        return;
+      }
+
+
+      loading.classList.add("hidden");
+      table.classList.remove("hidden");
+
+
+      document.getElementById("attemptCount")
+        .textContent = data.length;
+
+
+      if (data.length > 0) {
+
+        const highest =
+          Math.max(...data.map(item => item.score));
+
+        document.getElementById("highestScore")
+          .textContent = highest + " / 12";
+
+
+        const latestDate =
+          new Date(data[0].started_at);
+
+        document.getElementById("latestAttempt")
+          .textContent =
+          latestDate.toLocaleDateString("ar");
+
+      } else {
+
+        document.getElementById("highestScore")
+          .textContent = "0 / 12";
+
+        document.getElementById("latestAttempt")
+          .textContent = "—";
+      }
+
+
+      data.forEach(item => {
+
+        const row =
+          document.createElement("tr");
+
+
+        const dateCell =
+          document.createElement("td");
+
+        const date =
+          new Date(item.started_at);
+
+        dateCell.textContent =
+          date.toLocaleString("ar");
+
+
+        const nameCell =
+          document.createElement("td");
+
+        nameCell.textContent =
+          item.name;
+
+
+        const scoreCell =
+          document.createElement("td");
+
+        scoreCell.textContent =
+          item.score + " / " +
+          item.total_questions;
+
+
+        const heartsCell =
+          document.createElement("td");
+
+        if (item.hearts_left > 0) {
+
+          heartsCell.textContent =
+            "💗 ".repeat(item.hearts_left);
+
+        } else {
+
+          heartsCell.textContent =
+            "💔";
+
+        }
+
+
+        row.appendChild(dateCell);
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+        row.appendChild(heartsCell);
+
+        body.appendChild(row);
+
+      });
+
+    }
+
+
+    async function checkSession() {
+
+      const { data } =
+        await supabaseClient.auth.getSession();
+
+      if (data.session) {
+
+        showAdmin();
+        loadAttempts();
+
+      }
+
+    }
+
+
+    checkSession();
+
+  </script>
+
+</body>
+</html>
