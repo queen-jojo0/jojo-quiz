@@ -188,9 +188,16 @@
         autocomplete="current-password"
       >
 
-      <button onclick="login()">
-        تسجيل الدخول
-      </button>
+<button onclick="login()">
+  تسجيل الدخول
+</button>
+
+<button
+  onclick="resetPassword()"
+  style="background:#f3a6c4;"
+>
+  نسيت كلمة المرور؟
+</button>
 
       <div id="loginError" class="error"></div>
     </div>
@@ -273,7 +280,41 @@
         SUPABASE_KEY
       );
 
+async function resetPassword() {
 
+  const email =
+    document.getElementById("email").value.trim();
+
+  const error =
+    document.getElementById("loginError");
+
+  error.textContent = "";
+
+  if (!email) {
+    error.textContent =
+      "اكتبي إيميل حساب الإدارة أولًا";
+    return;
+  }
+
+  const { error: resetError } =
+    await supabaseClient.auth.resetPasswordForEmail(
+      email,
+      {
+        redirectTo:
+          window.location.origin + "/jojo-quiz/admin.html"
+      }
+    );
+
+  if (resetError) {
+    error.textContent =
+      "حدث خطأ. تأكدي من الإيميل.";
+    return;
+  }
+
+  error.style.color = "#2e7d32";
+  error.textContent =
+    "تم إرسال رابط تغيير كلمة المرور إلى إيميلك 💗";
+}
     async function login() {
 
       const email =
