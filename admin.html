@@ -19,23 +19,27 @@
       min-height: 100vh;
       padding: 20px;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ffd6e7, #fff0f6);
+      background: linear-gradient(135deg, #ffd6e7, #fff1f7);
       color: #6b2145;
     }
 
     .box {
       max-width: 1000px;
       margin: 40px auto;
-      background: white;
       padding: 28px;
+      background: white;
       border-radius: 28px;
-      box-shadow: 0 12px 35px rgba(180,70,120,.15);
+      box-shadow: 0 12px 35px rgba(180, 70, 120, 0.15);
     }
 
     .login {
-      max-width: 420px;
+      max-width: 430px;
       text-align: center;
-      margin-top: 90px;
+      margin-top: 80px;
+    }
+
+    h1 {
+      margin-top: 0;
     }
 
     input {
@@ -45,12 +49,13 @@
       border: 2px solid #f3b4cd;
       border-radius: 15px;
       font-size: 17px;
+      outline: none;
     }
 
     button {
       width: 100%;
       padding: 15px;
-      border: 0;
+      border: none;
       border-radius: 15px;
       background: #e889b2;
       color: white;
@@ -59,13 +64,20 @@
       cursor: pointer;
     }
 
-    .error {
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    .message {
       margin-top: 15px;
+      line-height: 1.6;
+    }
+
+    .error {
       color: #c62828;
     }
 
     .success {
-      margin-top: 15px;
       color: #2e7d32;
     }
 
@@ -74,6 +86,26 @@
       padding: 10px 18px;
       background: #777;
       margin-bottom: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      background: #fff0f6;
+      padding: 18px;
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 25px;
+      margin-top: 7px;
     }
 
     .table-wrap {
@@ -97,24 +129,9 @@
       background: #f8b6d0;
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin: 20px 0;
-    }
-
-    .stat {
-      background: #fff0f6;
-      padding: 18px;
-      border-radius: 18px;
+    .empty {
+      padding: 25px;
       text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 25px;
-      margin-top: 7px;
     }
 
     @media (max-width: 600px) {
@@ -127,251 +144,426 @@
 
 <body>
 
-<div id="loginScreen" class="box login">
+  <!-- LOGIN -->
 
-  <h1>👑 Jojo Admin</h1>
+  <div id="loginScreen" class="box login">
 
-  <p>دخول الإدارة الخاص</p>
+    <h1>👑 Jojo Admin</h1>
 
-  <input
-    id="email"
-    type="email"
-    placeholder="إيميل الإدارة"
-    autocomplete="email"
-  >
+    <p>دخول الإدارة الخاص</p>
 
-  <button onclick="sendLoginLink()">
-    إرسال رابط الدخول 💗
-  </button>
+    <input
+      id="email"
+      type="email"
+      placeholder="إيميل الإدارة"
+      autocomplete="email"
+    >
 
-  <div id="message"></div>
+    <button id="loginButton">
+      إرسال رابط الدخول 💗
+    </button>
 
-</div>
+    <div id="message" class="message"></div>
+
+  </div>
 
 
-<div id="adminScreen" class="box" style="display:none;">
+  <!-- ADMIN -->
 
-  <button class="logout" onclick="logout()">
-    خروج
-  </button>
+  <div id="adminScreen" class="box" style="display: none;">
 
-  <h1>نتائج اختبار جوجو 👑💗</h1>
+    <button id="logoutButton" class="logout">
+      خروج
+    </button>
 
-  <div class="stats">
+    <h1>نتائج اختبار جوجو 👑💗</h1>
 
-    <div class="stat">
-      عدد المحاولات
-      <strong id="attemptCount">0</strong>
+    <div class="stats">
+
+      <div class="stat">
+        عدد المحاولات
+        <strong id="attemptCount">0</strong>
+      </div>
+
+      <div class="stat">
+        أعلى نتيجة
+        <strong id="highestScore">0/12</strong>
+      </div>
+
     </div>
 
-    <div class="stat">
-      أعلى نتيجة
-      <strong id="highestScore">0/12</strong>
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>التاريخ والوقت</th>
+            <th>الاسم</th>
+            <th>النتيجة</th>
+          </tr>
+        </thead>
+
+        <tbody id="resultsBody"></tbody>
+
+      </table>
+
     </div>
 
   </div>
 
-  <div class="table-wrap">
 
-    <table>
+  <script>
 
-      <thead>
-        <tr>
-          <th>التاريخ والوقت</th>
-          <th>الاسم</th>
-          <th>النتيجة</th>
-        </tr>
-      </thead>
+    /* =========================================
+       SUPABASE
+       ========================================= */
 
-      <tbody id="resultsBody"></tbody>
+    const SUPABASE_URL =
+      "https://tferyxorlxacsvtafknu.supabase.co";
 
-    </table>
+    /*
+      مهم جدًا:
+      ضعي هنا الـ ANON KEY الصحيح الموجود
+      عندك في index.html.
+      
+      لا تضعي service_role key.
+    */
 
-  </div>
-
-</div>
-
-
-<script>
-
-const SUPABASE_URL =
-  "https://tferyxorlxacsvtafknu.supabase.co";
-alert("JS اشتغل");
-const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZXJ5eG9ybHhhY3N2dGFma251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjcwMDUsImV4cCI6MjEwNTUwMzAwNX0.XTN9k_0qmwSCvQMG1er2s-5H-5XRk5edIC-8gat9VSg";
+    const SUPABASE_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZXJ5eG9ybHhhY3N2dGFma251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjcwMDUsImV4cCI6MjEwNTUwMzAwNX0.XTN9k_0qmwSCvQMG1er2s-5H-5XRk5edIC-8gat9VSg";
 
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
 
 
-async function sendLoginLink() {
+    /* =========================================
+       ELEMENTS
+       ========================================= */
 
-  const email =
-    document.getElementById("email").value.trim();
+    const loginScreen =
+      document.getElementById("loginScreen");
 
-  const message =
-    document.getElementById("message");
+    const adminScreen =
+      document.getElementById("adminScreen");
 
-  message.className = "error";
-  message.textContent = "";
+    const emailInput =
+      document.getElementById("email");
 
-  if (!email) {
-    message.textContent =
-      "اكتبي إيميل الإدارة أولًا.";
-    return;
-  }
+    const loginButton =
+      document.getElementById("loginButton");
 
-  const { error } =
-    await supabaseClient.auth.signInWithOtp({
-      email: email,
-      options: {
-        emailRedirectTo:
-          window.location.origin +
-          "/jojo-quiz/admin.html"
+    const logoutButton =
+      document.getElementById("logoutButton");
+
+    const message =
+      document.getElementById("message");
+
+    const resultsBody =
+      document.getElementById("resultsBody");
+
+    const attemptCount =
+      document.getElementById("attemptCount");
+
+    const highestScore =
+      document.getElementById("highestScore");
+
+
+    /* =========================================
+       SEND MAGIC LINK
+       ========================================= */
+
+    loginButton.addEventListener("click", async function () {
+
+      const email =
+        emailInput.value.trim();
+
+      message.className = "message";
+      message.textContent = "";
+
+      if (!email) {
+
+        message.className =
+          "message error";
+
+        message.textContent =
+          "اكتبي إيميل الإدارة أولًا.";
+
+        return;
       }
+
+      loginButton.disabled = true;
+      loginButton.textContent =
+        "جاري إرسال الرابط...";
+
+      try {
+
+        const { error } =
+          await supabaseClient.auth.signInWithOtp({
+
+            email: email,
+
+            options: {
+              emailRedirectTo:
+                "https://queen-jojo0.github.io/jojo-quiz/admin.html"
+            }
+
+          });
+
+
+        if (error) {
+
+          message.className =
+            "message error";
+
+          message.textContent =
+            "حدث خطأ: " + error.message;
+
+          loginButton.disabled = false;
+
+          loginButton.textContent =
+            "إرسال رابط الدخول 💗";
+
+          return;
+        }
+
+
+        message.className =
+          "message success";
+
+        message.textContent =
+          "تم إرسال رابط الدخول إلى الإيميل 💗 افتحي الإيميل واضغطي الرابط.";
+
+
+      } catch (error) {
+
+        message.className =
+          "message error";
+
+        message.textContent =
+          "حدث خطأ: " + error.message;
+
+      }
+
+
+      loginButton.disabled = false;
+
+      loginButton.textContent =
+        "إرسال رابط الدخول 💗";
+
     });
 
-  if (error) {
 
-    message.textContent =
-      "حدث خطأ: " + error.message;
+    /* =========================================
+       CHECK LOGIN
+       ========================================= */
 
-    return;
-  }
+    async function checkSession() {
 
-  message.className = "success";
-
-  message.textContent =
-    "تم إرسال رابط الدخول إلى إيميل الإدارة 💗";
-}
+      const { data, error } =
+        await supabaseClient.auth.getSession();
 
 
-async function checkSession() {
+      if (error) {
 
-  const { data } =
-    await supabaseClient.auth.getSession();
+        console.log(error);
 
-  if (data.session) {
-
-    document.getElementById("loginScreen")
-      .style.display = "none";
-
-    document.getElementById("adminScreen")
-      .style.display = "block";
-
-    loadResults();
-  }
-}
+        return;
+      }
 
 
-async function loadResults() {
+      if (data.session) {
 
-  const { data, error } =
-    await supabaseClient
-      .from("quiz_attempts")
-      .select(
-        "name, score, total_questions, started_at"
-      )
-      .order("started_at", {
-        ascending: false
-      });
+        showAdmin();
 
-  if (error) {
+      }
 
-    document.getElementById("resultsBody")
-      .innerHTML =
-      "<tr><td colspan='3'>لا يمكن تحميل النتائج.</td></tr>";
-
-    return;
-  }
-
-  const body =
-    document.getElementById("resultsBody");
-
-  body.innerHTML = "";
-
-  document.getElementById("attemptCount")
-    .textContent = data.length;
-
-  let highest = 0;
-
-  data.forEach(row => {
-
-    if (row.score > highest) {
-      highest = row.score;
     }
 
-    const tr =
-      document.createElement("tr");
 
-    const date =
-      new Date(row.started_at);
+    /* =========================================
+       SHOW ADMIN
+       ========================================= */
 
-    tr.innerHTML = `
-      <td>${date.toLocaleString("ar")}</td>
-      <td>${escapeHtml(row.name)}</td>
-      <td>${row.score}/${row.total_questions}</td>
-    `;
+    function showAdmin() {
 
-    body.appendChild(tr);
+      loginScreen.style.display =
+        "none";
 
-  });
-
-  document.getElementById("highestScore")
-    .textContent = highest + "/12";
-}
-
-
-function escapeHtml(value) {
-
-  const div =
-    document.createElement("div");
-
-  div.textContent = value;
-
-  return div.innerHTML;
-}
-
-
-async function logout() {
-
-  await supabaseClient.auth.signOut();
-
-  document.getElementById("adminScreen")
-    .style.display = "none";
-
-  document.getElementById("loginScreen")
-    .style.display = "block";
-
-  document.getElementById("email").value = "";
-}
-
-
-supabaseClient.auth.onAuthStateChange(
-  (event, session) => {
-
-    if (session) {
-
-      document.getElementById("loginScreen")
-        .style.display = "none";
-
-      document.getElementById("adminScreen")
-        .style.display = "block";
+      adminScreen.style.display =
+        "block";
 
       loadResults();
 
     }
-  }
-);
 
 
-checkSession();
+    /* =========================================
+       LOAD RESULTS
+       ========================================= */
 
-</script>
+    async function loadResults() {
+
+      resultsBody.innerHTML =
+        '<tr><td colspan="3" class="empty">جاري تحميل النتائج...</td></tr>';
+
+
+      const { data, error } =
+        await supabaseClient
+          .from("quiz_attempts")
+          .select(
+            "name, score, total_questions, started_at"
+          )
+          .order(
+            "started_at",
+            { ascending: false }
+          );
+
+
+      if (error) {
+
+        resultsBody.innerHTML =
+          `<tr>
+            <td colspan="3" class="empty">
+              ${escapeHtml(error.message)}
+            </td>
+          </tr>`;
+
+        return;
+      }
+
+
+      resultsBody.innerHTML = "";
+
+
+      if (!data || data.length === 0) {
+
+        resultsBody.innerHTML =
+          '<tr><td colspan="3" class="empty">لا توجد محاولات حتى الآن.</td></tr>';
+
+        attemptCount.textContent = "0";
+        highestScore.textContent = "0/12";
+
+        return;
+      }
+
+
+      attemptCount.textContent =
+        data.length;
+
+
+      let highest = 0;
+
+
+      data.forEach(function (row) {
+
+        if (row.score > highest) {
+          highest = row.score;
+        }
+
+
+        const tr =
+          document.createElement("tr");
+
+
+        const date =
+          new Date(row.started_at);
+
+
+        tr.innerHTML = `
+          <td>
+            ${date.toLocaleString("ar")}
+          </td>
+
+          <td>
+            ${escapeHtml(row.name)}
+          </td>
+
+          <td>
+            ${row.score}/${row.total_questions}
+          </td>
+        `;
+
+
+        resultsBody.appendChild(tr);
+
+      });
+
+
+      highestScore.textContent =
+        highest + "/12";
+
+    }
+
+
+    /* =========================================
+       ESCAPE NAMES
+       ========================================= */
+
+    function escapeHtml(value) {
+
+      const div =
+        document.createElement("div");
+
+      div.textContent =
+        value ?? "";
+
+      return div.innerHTML;
+
+    }
+
+
+    /* =========================================
+       LOGOUT
+       ========================================= */
+
+    logoutButton.addEventListener(
+      "click",
+      async function () {
+
+        await supabaseClient.auth.signOut();
+
+        adminScreen.style.display =
+          "none";
+
+        loginScreen.style.display =
+          "block";
+
+        emailInput.value = "";
+
+        message.textContent = "";
+
+      }
+    );
+
+
+    /* =========================================
+       AUTH STATE
+       ========================================= */
+
+    supabaseClient.auth.onAuthStateChange(
+      function (event, session) {
+
+        if (session) {
+          showAdmin();
+        }
+
+      }
+    );
+
+
+    /* =========================================
+       START
+       ========================================= */
+
+    checkSession();
+
+  </script>
 
 </body>
+
 </html>
