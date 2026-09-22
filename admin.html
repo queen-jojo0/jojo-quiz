@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Jojo Admin</title>
+  <title>Judy Admin</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -25,7 +25,7 @@
 
     .box {
       max-width: 1000px;
-      margin: 40px auto;
+      margin: 50px auto;
       padding: 28px;
       background: white;
       border-radius: 28px;
@@ -35,11 +35,7 @@
     .login {
       max-width: 430px;
       text-align: center;
-      margin-top: 80px;
-    }
-
-    h1 {
-      margin-top: 0;
+      margin-top: 100px;
     }
 
     input {
@@ -48,8 +44,9 @@
       margin: 15px 0;
       border: 2px solid #f3b4cd;
       border-radius: 15px;
-      font-size: 17px;
+      font-size: 18px;
       outline: none;
+      text-align: center;
     }
 
     button {
@@ -59,7 +56,7 @@
       border-radius: 15px;
       background: #e889b2;
       color: white;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -83,7 +80,7 @@
 
     .logout {
       width: auto;
-      padding: 10px 18px;
+      padding: 10px 20px;
       background: #777;
       margin-bottom: 15px;
     }
@@ -114,7 +111,7 @@
 
     table {
       width: 100%;
-      min-width: 600px;
+      min-width: 650px;
       border-collapse: collapse;
     }
 
@@ -134,6 +131,11 @@
       text-align: center;
     }
 
+    .hearts {
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
     @media (max-width: 600px) {
       .stats {
         grid-template-columns: 1fr;
@@ -148,19 +150,19 @@
 
   <div id="loginScreen" class="box login">
 
-    <h1>👑 Jojo Admin</h1>
+    <h1>👑 Judy Admin</h1>
 
-    <p>دخول الإدارة الخاص</p>
+    <p>الدخول الخاص</p>
 
     <input
-      id="email"
-      type="email"
-      placeholder="إيميل الإدارة"
-      autocomplete="email"
+      id="codeInput"
+      type="password"
+      placeholder="رمز الدخول"
+      autocomplete="off"
     >
 
     <button id="loginButton">
-      إرسال رابط الدخول 💗
+      دخول 👑
     </button>
 
     <div id="message" class="message"></div>
@@ -170,7 +172,7 @@
 
   <!-- ADMIN -->
 
-  <div id="adminScreen" class="box" style="display: none;">
+  <div id="adminScreen" class="box" style="display:none;">
 
     <button id="logoutButton" class="logout">
       خروج
@@ -201,6 +203,7 @@
             <th>التاريخ والوقت</th>
             <th>الاسم</th>
             <th>النتيجة</th>
+            <th>القلوب المتبقية</th>
           </tr>
         </thead>
 
@@ -215,20 +218,12 @@
 
   <script>
 
-    /* =========================================
+    /* ==============================
        SUPABASE
-       ========================================= */
+       ============================== */
 
     const SUPABASE_URL =
       "https://tferyxorlxacsvtafknu.supabase.co";
-
-    /*
-      مهم جدًا:
-      ضعي هنا الـ ANON KEY الصحيح الموجود
-      عندك في index.html.
-      
-      لا تضعي service_role key.
-    */
 
     const SUPABASE_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmZXJ5eG9ybHhhY3N2dGFma251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjcwMDUsImV4cCI6MjEwNTUwMzAwNX0.XTN9k_0qmwSCvQMG1er2s-5H-5XRk5edIC-8gat9VSg";
@@ -241,9 +236,9 @@
       );
 
 
-    /* =========================================
+    /* ==============================
        ELEMENTS
-       ========================================= */
+       ============================== */
 
     const loginScreen =
       document.getElementById("loginScreen");
@@ -251,8 +246,8 @@
     const adminScreen =
       document.getElementById("adminScreen");
 
-    const emailInput =
-      document.getElementById("email");
+    const codeInput =
+      document.getElementById("codeInput");
 
     const loginButton =
       document.getElementById("loginButton");
@@ -273,46 +268,66 @@
       document.getElementById("highestScore");
 
 
-    /* =========================================
-       SEND MAGIC LINK
-       ========================================= */
+    /* ==============================
+       LOGIN
+       ============================== */
 
-    loginButton.addEventListener("click", async function () {
+    loginButton.addEventListener(
+      "click",
+      login
+    );
 
-      const email =
-        emailInput.value.trim();
 
-      message.className = "message";
+    codeInput.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (event.key === "Enter") {
+          login();
+        }
+
+      }
+    );
+
+
+    async function login() {
+
+      const code =
+        codeInput.value.trim();
+
+      message.className =
+        "message";
+
       message.textContent = "";
 
-      if (!email) {
+
+      if (!code) {
 
         message.className =
           "message error";
 
         message.textContent =
-          "اكتبي إيميل الإدارة أولًا.";
+          "اكتبي رمز الدخول.";
 
         return;
       }
 
+
       loginButton.disabled = true;
+
       loginButton.textContent =
-        "جاري إرسال الرابط...";
+        "جاري التحقق...";
+
 
       try {
 
-        const { error } =
-          await supabaseClient.auth.signInWithOtp({
-
-            email: email,
-
-            options: {
-              emailRedirectTo:
-                "https://queen-jojo0.github.io/jojo-quiz/admin.html"
+        const { data, error } =
+          await supabaseClient.rpc(
+            "admin_get_attempts",
+            {
+              input_code: code
             }
-
-          });
+          );
 
 
         if (error) {
@@ -321,22 +336,31 @@
             "message error";
 
           message.textContent =
-            "حدث خطأ: " + error.message;
+            "رمز الدخول غير صحيح.";
 
           loginButton.disabled = false;
 
           loginButton.textContent =
-            "إرسال رابط الدخول 💗";
+            "دخول 👑";
 
           return;
         }
 
 
-        message.className =
-          "message success";
+        sessionStorage.setItem(
+          "judy_admin",
+          "true"
+        );
 
-        message.textContent =
-          "تم إرسال رابط الدخول إلى الإيميل 💗 افتحي الإيميل واضغطي الرابط.";
+
+        loginScreen.style.display =
+          "none";
+
+        adminScreen.style.display =
+          "block";
+
+
+        displayResults(data || []);
 
 
       } catch (error) {
@@ -345,7 +369,7 @@
           "message error";
 
         message.textContent =
-          "حدث خطأ: " + error.message;
+          "حدث خطأ أثناء التحقق.";
 
       }
 
@@ -353,103 +377,18 @@
       loginButton.disabled = false;
 
       loginButton.textContent =
-        "إرسال رابط الدخول 💗";
-
-    });
-
-
-    /* =========================================
-       CHECK LOGIN
-       ========================================= */
-
-    async function checkSession() {
-
-      const { data, error } =
-        await supabaseClient.auth.getSession();
-
-
-      if (error) {
-
-        console.log(error);
-
-        return;
-      }
-
-
-      if (data.session) {
-
-        showAdmin();
-
-      }
+        "دخول 👑";
 
     }
 
 
-    /* =========================================
-       SHOW ADMIN
-       ========================================= */
+    /* ==============================
+       DISPLAY RESULTS
+       ============================== */
 
-    function showAdmin() {
-
-      loginScreen.style.display =
-        "none";
-
-      adminScreen.style.display =
-        "block";
-
-      loadResults();
-
-    }
-
-
-    /* =========================================
-       LOAD RESULTS
-       ========================================= */
-
-    async function loadResults() {
-
-      resultsBody.innerHTML =
-        '<tr><td colspan="3" class="empty">جاري تحميل النتائج...</td></tr>';
-
-
-      const { data, error } =
-        await supabaseClient
-          .from("quiz_attempts")
-          .select(
-            "name, score, total_questions, started_at"
-          )
-          .order(
-            "started_at",
-            { ascending: false }
-          );
-
-
-      if (error) {
-
-        resultsBody.innerHTML =
-          `<tr>
-            <td colspan="3" class="empty">
-              ${escapeHtml(error.message)}
-            </td>
-          </tr>`;
-
-        return;
-      }
-
+    function displayResults(data) {
 
       resultsBody.innerHTML = "";
-
-
-      if (!data || data.length === 0) {
-
-        resultsBody.innerHTML =
-          '<tr><td colspan="3" class="empty">لا توجد محاولات حتى الآن.</td></tr>';
-
-        attemptCount.textContent = "0";
-        highestScore.textContent = "0/12";
-
-        return;
-      }
 
 
       attemptCount.textContent =
@@ -459,10 +398,28 @@
       let highest = 0;
 
 
-      data.forEach(function (row) {
+      if (data.length === 0) {
 
-        if (row.score > highest) {
-          highest = row.score;
+        resultsBody.innerHTML =
+          `
+          <tr>
+            <td colspan="4" class="empty">
+              لا توجد محاولات حتى الآن.
+            </td>
+          </tr>
+          `;
+
+        highestScore.textContent =
+          "0/12";
+
+        return;
+      }
+
+
+      data.forEach(function(row) {
+
+        if (Number(row.score) > highest) {
+          highest = Number(row.score);
         }
 
 
@@ -474,7 +431,33 @@
           new Date(row.started_at);
 
 
+        const hearts =
+          Number(row.hearts_left);
+
+
+        let heartDisplay = "";
+
+
+        for (
+          let i = 0;
+          i < hearts;
+          i++
+        ) {
+          heartDisplay += "💗";
+        }
+
+
+        for (
+          let i = hearts;
+          i < 5;
+          i++
+        ) {
+          heartDisplay += "🖤";
+        }
+
+
         tr.innerHTML = `
+
           <td>
             ${date.toLocaleString("ar")}
           </td>
@@ -486,6 +469,11 @@
           <td>
             ${row.score}/${row.total_questions}
           </td>
+
+          <td class="hearts">
+            ${heartDisplay}
+          </td>
+
         `;
 
 
@@ -500,9 +488,9 @@
     }
 
 
-    /* =========================================
-       ESCAPE NAMES
-       ========================================= */
+    /* ==============================
+       SECURITY FOR NAMES
+       ============================== */
 
     function escapeHtml(value) {
 
@@ -517,15 +505,17 @@
     }
 
 
-    /* =========================================
+    /* ==============================
        LOGOUT
-       ========================================= */
+       ============================== */
 
     logoutButton.addEventListener(
       "click",
-      async function () {
+      function() {
 
-        await supabaseClient.auth.signOut();
+        sessionStorage.removeItem(
+          "judy_admin"
+        );
 
         adminScreen.style.display =
           "none";
@@ -533,7 +523,7 @@
         loginScreen.style.display =
           "block";
 
-        emailInput.value = "";
+        codeInput.value = "";
 
         message.textContent = "";
 
@@ -541,26 +531,27 @@
     );
 
 
-    /* =========================================
-       AUTH STATE
-       ========================================= */
+    /* ==============================
+       REMEMBER LOGIN FOR THIS TAB
+       ============================== */
 
-    supabaseClient.auth.onAuthStateChange(
-      function (event, session) {
+    if (
+      sessionStorage.getItem(
+        "judy_admin"
+      ) === "true"
+    ) {
 
-        if (session) {
-          showAdmin();
-        }
+      /*
+        لا نعرض البيانات القديمة
+        بدون إعادة التحقق من الرمز.
+        لذلك نترك شاشة الدخول.
+      */
 
-      }
-    );
+      sessionStorage.removeItem(
+        "judy_admin"
+      );
 
-
-    /* =========================================
-       START
-       ========================================= */
-
-    checkSession();
+    }
 
   </script>
 
